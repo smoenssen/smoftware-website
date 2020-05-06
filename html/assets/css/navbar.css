@@ -1,0 +1,157 @@
+/*!
+ * Start Bootstrap - Grayscale v3.3.7+1 (http://startbootstrap.com/template-overviews/grayscale)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+/*
+/* Modified by Steve Moenssen */
+.navbar-custom,
+body {
+    /*srm navbar color*/
+    background-color: #313233;
+}
+.light {
+    font-weight: 200
+}
+buttonToggle,
+/* srm added mytoggle id to get active/hover/focus working */
+#mytoggle:hover
+{
+    background-color: #0b8bd5;
+}
+
+#mytoggle:active
+{
+    background-color: #08659a;
+    color: #cccccc;
+}
+
+#mytoggle:focus
+{
+  background-color: #08659a;
+}
+
+.navbar-custom {
+    margin-bottom: 0;
+    border-bottom: 0px;
+    opacity: 0;
+    -moz-animation: fadein 2s 1.75s forwards;
+    -webkit-animation: fadein 2s 1.75s forwards;
+    -ms-animation: fadein 2s 1.75s forwards;
+    animation: fadein 2s 1.75s forwards;
+}
+@keyframes fadein {
+    100% {
+        opacity: 1;
+    }
+}
+@-moz-keyframes fadein {
+    100% {
+        opacity: 1;
+    }
+}
+@-webkit-keyframes fadein {
+    100% {
+        opacity: 1;
+    }
+}
+@-ms-keyframes fadein {
+    100% {
+        opacity: 1;
+    }
+}
+/* srm this only has effect when bar button is shown */
+.navbar-custom .navbar-toggle {
+    /*srm menu toggle button*/
+    color: #fff;
+    background-color: #0976b4;
+    font-size: 1.2em;
+    text-align: center;
+    line-height: 1.5em;
+    padding-top: 0.2em;
+    padding-bottom: 0.08em;
+}
+/* srm this is the menu text links */
+.navbar-custom .navbar-nav {
+    font-family: "Source Sans Pro", Helvetica, sans-serif;
+    font-size: 19px;
+    font-: 300;
+    color: #ffffff;
+}
+.navbar-custom .nav li a:active {
+    background-color: transparent;
+    color: #333333;
+    outline: 0;
+}
+.navbar-custom .nav li a:focus {
+    background-color: transparent;
+    color: #ffffff;
+    outline: 0
+}
+.navbar-custom .nav li a:hover {
+    background-color: transparent;
+    color: #555555;
+    outline: 0;
+}
+.navbar-custom .navbar-toggle:active,
+.navbar-custom .navbar-toggle:focus {
+    outline: 0
+    background-color: #fff;
+}
+/* srm brand hyperlink */
+.navbar-custom .navbar-brand {
+    font-family: "Source Sans Pro", Helvetica, sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+}
+.navbar-custom .navbar-brand:focus {
+    outline: 0;
+}
+.navbar-custom .navbar-brand:hover {
+    outline: 0;
+    color: #555555;
+}
+.navbar-custom .navbar-brand:active {
+    outline: 0;
+    color: #333333;
+}
+.navbar-custom a {
+    color: #fff
+}
+.navbar-custom .nav li a {
+    -webkit-transition: background .3s ease-in-out;
+    -moz-transition: background .3s ease-in-out;
+    transition: background .3s ease-in-out
+}
+.navbar-custom .nav li a:hover {
+    color: rgba(255, 255, 255, .8)
+}
+.navbar-custom .nav li.active {
+    outline: 0
+}
+.navbar-custom .nav li.active a {
+    background-color: rgba(255, 255, 255, .3)
+}
+.navbar-custom .nav li.active a:hover {
+    color: #fff
+}
+@media (min-width:768px) {
+    .navbar-custom {
+        /*srm this is the padding for the header on the home page */
+        padding: 22px 0;
+        border-bottom: none;
+        letter-spacing: 1px;
+        /*srm this makes the header transparent */
+        background: 0 0;
+        -webkit-transition: background .5s ease-in-out, padding .5s ease-in-out;
+        -moz-transition: background .5s ease-in-out, padding .5s ease-in-out;
+        transition: background .5s ease-in-out, padding .5s ease-in-out
+    }
+    .navbar-custom.top-nav-collapse {
+        padding: 0;
+        /*srm this is the background color for nav*/
+        background: #313233;
+        border-bottom: none;
+    }
+}
