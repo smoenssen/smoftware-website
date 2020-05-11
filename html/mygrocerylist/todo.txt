@@ -1,0 +1,1 @@
+set max-width to 500px for all forms

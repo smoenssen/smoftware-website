@@ -1,11 +1,20 @@
 <?php
+// Initialize the session
+session_start();
+ 
+// Check if the user is logged in, if not then redirect him to login page
+if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+    header("location: login.php");
+    exit;
+}
+
+// Include config file
+require_once "config.php";
+
 // Process delete operation after confirmation
 if(isset($_POST["id"]) && !empty($_POST["id"])){
-    // Include config file
-    require_once "config.php";
-    
     // Prepare a delete statement
-    $sql = "DELETE FROM employees WHERE id = :id";
+    $sql = "DELETE FROM GroceryList WHERE id = :id";
     
     if($stmt = $pdo->prepare($sql)){
         // Bind variables to the prepared statement as parameters
@@ -17,7 +26,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         // Attempt to execute the prepared statement
         if($stmt->execute()){
             // Records deleted successfully. Redirect to landing page
-            header("location: index1.php");
+            header("location: index.php");
             exit();
         } else{
             echo "Oops! Something went wrong. Please try again later.";
@@ -42,11 +51,12 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Record</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Delete Record</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         .wrapper{
-            width: 500px;
+            max-width: 500px;
             margin: 0 auto;
         }
     </style>
@@ -65,7 +75,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                             <p>Are you sure you want to delete this record?</p><br>
                             <p>
                                 <input type="submit" value="Yes" class="btn btn-danger">
-                                <a href="index1.php" class="btn btn-default">No</a>
+                                <a href="index.php" class="btn btn-default">No</a>
                             </p>
                         </div>
                     </form>

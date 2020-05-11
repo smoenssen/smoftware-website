@@ -4,12 +4,12 @@ session_start();
  
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: ../login.php");
+    header("location: login.php");
     exit;
 }
 
 // Include config file
-require_once "../config.php";
+require_once "config.php";
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +23,7 @@ require_once "../config.php";
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <style type="text/css">
         .wrapper{
-            width: 350px;
+            max-width: 500px;
             margin: 0 auto;
         }
         .page-header h2{
@@ -45,35 +45,31 @@ require_once "../config.php";
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header clearfix">
-                        <a href="../category/index.php" class="pull-right">Go to categories</a>
+                        <a href="logout.php" class="pull-left">Logout</a>
                     </div>
                     <div class="page-header clearfix">
-                        <h2 class="pull-left">Grocery Items</h2>
-                        <a href="create.php" class="btn btn-success pull-right">Add New Item</a>
+                        <h2 class="pull-left">My Lists</h2>
+                        <a href="create.php" class="btn btn-success pull-right">Add New List</a>
                     </div>
                     <?php
                     // Attempt select query execution
-                    $sql = "SELECT * FROM GroceryItem WHERE UserId = " . $_SESSION["id"];
+                    
+                    $sql = "SELECT * FROM GroceryList WHERE UserId = " . $_SESSION["id"];
                     if($result = $pdo->query($sql)){
                         if($result->rowCount() > 0){
                             echo "<table class='table table-bordered table-striped'>";
                                 echo "<thead>";
                                     echo "<tr>";
-                                        echo "<th>Name</th>";
-                                        echo "<th>Category</th>";
+                                        //echo "<th>#</th>";
+                                        echo "<th>List</th>";
                                         echo "<th>Action</th>";
                                     echo "</tr>";
                                 echo "</thead>";
                                 echo "<tbody>";
                                 while($row = $result->fetch()){
                                     echo "<tr>";
-                                        echo "<td>" . $row['Name'] . "</td>";
-                                        
-                                        $smt = $pdo->prepare('SELECT * FROM Category WHERE id = ' . $row['CatId']);
-                                        $smt->execute();
-                                        $data = $smt->fetch();
-                                        
-                                        echo "<td>" . $data['Name'] . "</td>";
+                                        //echo "<td>" . $row['id'] . "</td>";
+                                        echo "<td><a href='list/list.php?id=". $row['id'] . "'>" . $row['Name'] . "</a></td>";
                                         echo "<td width='25%'>";
                                             echo "<a href='update.php?id=". $row['id'] ."' title='Update Record' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
                                             echo "<a href='delete.php?id=". $row['id'] ."' title='Delete Record' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";

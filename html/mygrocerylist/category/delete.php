@@ -8,13 +8,13 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     exit;
 }
 
+// Include config file
+require_once "../config.php";
+
 // Process delete operation after confirmation
 if(isset($_POST["id"]) && !empty($_POST["id"])){
-    // Include config file
-    require_once "../config.php";
-    
     // Prepare a delete statement
-    $sql = "DELETE FROM GroceryItem WHERE id = :id";
+    $sql = "DELETE FROM Category WHERE id = :id";
     
     if($stmt = $pdo->prepare($sql)){
         // Bind variables to the prepared statement as parameters
@@ -56,7 +56,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         .wrapper{
-            width: 500px;
+            max-width: 500px;
             margin: 0 auto;
         }
     </style>

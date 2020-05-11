@@ -23,7 +23,7 @@ require_once "../config.php";
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <style type="text/css">
         .wrapper{
-            width: 350px;
+            max-width: 500px;
             margin: 0 auto;
         }
         .page-header h2{
@@ -45,6 +45,7 @@ require_once "../config.php";
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header clearfix">
+                        <a href="../index.php" class="pull-left">Back</a>
                         <a href="../groceryitem/index.php" class="pull-right">Go to grocery items</a>
                     </div>
                     <div class="page-header clearfix">

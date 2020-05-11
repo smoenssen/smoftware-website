@@ -141,7 +141,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         .wrapper{
-            width: 350px;
+            max-width: 500px;
             margin: 0 auto;
         }
     </style>

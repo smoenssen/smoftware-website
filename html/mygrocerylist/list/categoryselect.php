@@ -16,7 +16,10 @@ $name = "";
 $name_err = "";
  
 // Processing form data when form is submitted
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+if(isset($_POST["id"]) && !empty($_POST["id"])){
+    // Get hidden input value
+    $id = $_POST["id"];
+    
     // Validate name
     $input_name = trim($_POST["name"]);
     if(empty($input_name)){
@@ -28,22 +31,22 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
     
     // Check input errors before inserting in database
-    if(empty($name_err) && empty($address_err) && empty($salary_err)){
-        // Prepare an insert statement
-        $sql = "INSERT INTO Category (Name, UserId) VALUES (:name, :userId)";
+    if(empty($name_err)){
+        // Prepare an update statement
+        $sql = "UPDATE Category SET Name=:name WHERE id=:id";
  
         if($stmt = $pdo->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bindParam(":name", $param_name);
-            $stmt->bindParam(":userId", $param_user_id);
+            $stmt->bindParam(":id", $param_id);
             
             // Set parameters
             $param_name = $name;
-            $param_user_id = $_SESSION["id"];
+            $param_id = $id;
             
             // Attempt to execute the prepared statement
             if($stmt->execute()){
-                // Records created successfully. Redirect to landing page
+                // Records updated successfully. Redirect to landing page
                 header("location: index.php");
                 exit();
             } else{
@@ -57,6 +60,50 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     
     // Close connection
     unset($pdo);
+} else{
+    // Check existence of id parameter before processing further
+    if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
+        // Get URL parameter
+        $id =  trim($_GET["id"]);
+        
+        // Prepare a select statement
+        $sql = "SELECT * FROM Category WHERE id = :id";
+        if($stmt = $pdo->prepare($sql)){
+            // Bind variables to the prepared statement as parameters
+            $stmt->bindParam(":id", $param_id);
+            
+            // Set parameters
+            $param_id = $id;
+            
+            // Attempt to execute the prepared statement
+            if($stmt->execute()){
+                if($stmt->rowCount() == 1){
+                    /* Fetch result row as an associative array. Since the result set contains only one row, we don't need to use while loop */
+                    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                    // Retrieve individual field value
+                    $name = $row["Name"];
+                } else{
+                    // URL doesn't contain valid id. Redirect to error page
+                    header("location: error.php");
+                    exit();
+                }
+                
+            } else{
+                echo "Oops! Something went wrong. Please try again later.";
+            }
+        }
+        
+        // Close statement
+        unset($stmt);
+        
+        // Close connection
+        unset($pdo);
+    }  else{
+        // URL doesn't contain id parameter. Redirect to error page
+        header("location: error.php");
+        exit();
+    }
 }
 ?>
  
@@ -65,11 +112,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create Record</title>
+    <title>Update Record</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         .wrapper{
-            width: 350px;
+            max-width: 500px;
             margin: 0 auto;
         }
     </style>
@@ -80,15 +127,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h2>Create Record</h2>
+                        <h2>Update Record</h2>
                     </div>
-                    <p>Please fill this form and submit to add a record to the database.</p>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <p>Please edit the input values and submit to update the record.</p>
+                    <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
                             <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
                             <span class="help-block"><?php echo $name_err;?></span>
                         </div>
+                        <input type="hidden" name="id" value="<?php echo $id; ?>"/>
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <a href="index.php" class="btn btn-default">Cancel</a>
                     </form>

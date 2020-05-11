@@ -12,8 +12,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 require_once "../config.php";
  
 // Define variables and initialize with empty values
-$name = "";
-$name_err = "";
+$name = $category = "";
+$name_err = $category_err = "";
  
 // Processing form data when form is submitted
 if(isset($_POST["id"]) && !empty($_POST["id"])){
@@ -30,23 +30,38 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         $name = $input_name;
     }
     
+    // Validate category
+    $input_category = trim($_POST["selCategory"]);
+    if(empty($input_category)){
+        $category_err = "Please select a category.";     
+    } else{
+        $category = $input_category;
+    }
+    
     // Check input errors before inserting in database
-    if(empty($name_err)){
+    if(empty($name_err) && empty($category_err)){
         // Prepare an update statement
-        $sql = "UPDATE Category SET Name=:name WHERE id=:id";
+        $sql = "UPDATE GroceryItem SET Name=:name, CatId=:catId, IsSelected=:isSelected, Quantity=:quantity WHERE id=:id";
+    
  
         if($stmt = $pdo->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bindParam(":name", $param_name);
+            $stmt->bindParam(":catId", $param_catId);
+            $stmt->bindParam(":isSelected", $param_isSelected);
+            $stmt->bindParam(":quantity", $param_quantity);
             $stmt->bindParam(":id", $param_id);
             
             // Set parameters
             $param_name = $name;
+            $param_catId = $_POST['selCategory'];
+            $param_isSelected = $isSelected;
+            $param_quantity = $quantity;
             $param_id = $id;
             
             // Attempt to execute the prepared statement
             if($stmt->execute()){
-                // Records updated successfully. Redirect to landing page
+                // Records created successfully. Redirect to landing page
                 header("location: index.php");
                 exit();
             } else{
@@ -66,8 +81,15 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         // Get URL parameter
         $id =  trim($_GET["id"]);
         
+        // Get category list
+        if(empty($category_list)){
+            $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"]);
+            $smt->execute();
+            $category_list = $smt->fetchAll();
+        }
+        
         // Prepare a select statement
-        $sql = "SELECT * FROM Category WHERE id = :id";
+        $sql = "SELECT * FROM GroceryItem WHERE id = :id";
         if($stmt = $pdo->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bindParam(":id", $param_id);
@@ -83,6 +105,9 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                 
                     // Retrieve individual field value
                     $name = $row["Name"];
+                    $catId = $row["CatId"];
+                    $isSelected = $row["IsSelected"];
+                    $quantity = $row["Quantity"];
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
                     header("location: error.php");
@@ -116,7 +141,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         .wrapper{
-            width: 350px;
+            max-width: 500px;
             margin: 0 auto;
         }
     </style>
@@ -135,6 +160,24 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                             <label>Name</label>
                             <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
                             <span class="help-block"><?php echo $name_err;?></span>
+                        </div>
+                        <div class="form-group <?php echo (!empty($category_err)) ? 'has-error' : ''; ?>">
+                            <label>Category</label>
+
+                            <select class="form-control" name="selCategory">
+                                
+                                <?php foreach ($category_list as $row):
+                                    if ($row["id"] == $catId) {
+                                        echo "<option value='" . $row["id"] . "' selected>" . $row["Name"] . "</option>";
+                                    }
+                                    else {
+                                        echo "<option value='" . $row["id"] . "'>" . $row["Name"] . "</option>";
+                                    }
+                                    endforeach
+                                ?>
+                            </select>
+
+                            <span class="help-block"><?php echo $category_err;?></span>
                         </div>
                         <input type="hidden" name="id" value="<?php echo $id; ?>"/>
                         <input type="submit" class="btn btn-primary" value="Submit">

@@ -1,6 +1,12 @@
 <?php
 // see https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
 
+// https://webdesign.tutsplus.com/tutorials/how-to-integrate-no-captcha-recaptcha-in-your-website--cms-23024
+// https://developers.google.com/recaptcha/docs/display
+// https://developers.google.com/recaptcha/docs/verify
+// site key: 6LcJbvUUAAAAAKanKIWWimqTUgGF7yB6d6HMo7l4
+// secret key: 6LcJbvUUAAAAAOJDVIf7-kQU-62hgLrOC1yJ9X46
+
 // Include config file
 require_once "config.php";
  
@@ -107,7 +113,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     </style>
     <style> .content
         {
-            max-width: 500px; margin: auto;
+            max-width: 500px;
+            margin: auto;
         }
     </style>
 </head>
@@ -134,10 +141,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     <span class="help-block"><?php echo $confirm_password_err; ?></span>
                 </div>
                 <div class="form-group">
+                    <div class="g-recaptcha" data-sitekey="6LcJbvUUAAAAAKanKIWWimqTUgGF7yB6d6HMo7l4"></div>
                     <input type="submit" class="btn btn-primary" value="Submit">
                     <input type="reset" class="btn btn-default" value="Reset">
                 </div>
                 <p>Already have an account? <a href="login.php">Login here</a>.</p>
+                
+                
+                <script src='https://www.google.com/recaptcha/api.js?hl=es'></script>
             </form>
         </div>
     </div>

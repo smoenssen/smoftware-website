@@ -62,7 +62,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             $_SESSION["email"] = $email;                            
                             
                             // Redirect user to welcome page
-                            header("location: category/index.php");
+                            header("location: index.php");
                         } else{
                             // Display an error message if password is not valid
                             $password_err = "The password you entered was not valid.";
@@ -99,7 +99,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     </style>
     <style> .content
         {
-            max-width: 500px; margin: auto;
+            max-width: 500px;
+            margin: auto;
         }
     </style>
 </head>
