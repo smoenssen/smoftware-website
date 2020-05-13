@@ -1,1 +1,5 @@
-set max-width to 500px for all forms
+set max-width to 500px for all forms.
+
+Don't allow duplicate entries for list, category, and groceryitem.
+
+When creating new user add default data.

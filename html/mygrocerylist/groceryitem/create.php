@@ -41,7 +41,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else{
         $category = $input_category;
     }
-                            
+            
+    // Get original source of request
+    $src = $_POST["src"];
+    
     // Check input errors before inserting in database
     if(empty($name_err) && empty($category_err)){
         // Prepare an insert statement
@@ -61,7 +64,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records created successfully. Redirect to landing page
-                header("location: index.php");
+                if ($src == "list-choosegroceries") {
+                    header("location: ../list/choosegroceries.php");
+                }
+                else {
+                    header("location: index.php");
+                }
+                
                 exit();
             } else{
                 echo "Something went wrong. Please try again later.";
@@ -74,6 +83,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     
     // Close connection
     unset($pdo);
+} else {
+    // Check existence of src parameter before processing further
+    if(isset($_GET["src"]) && !empty(trim($_GET["src"]))){
+        // Get URL parameter
+        $src =  trim($_GET["src"]);
+    }
 }
 ?>
 
@@ -105,6 +120,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
                             <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
+                            <input type="hidden" name="src" class="form-control" value="<?php echo $src; ?>">
                             <span class="help-block"><?php echo $name_err;?></span>
                         </div>
                         <div class="form-group <?php echo (!empty($category_err)) ? 'has-error' : ''; ?>">
@@ -118,17 +134,30 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                                 $category_list = $smt->fetchAll();
                             }
                             ?>
-                            <select class="form-control" name="selCategory">
-                                <option value="" disabled selected>Choose category</option>
-                                <?php foreach ($category_list as $row): ?>
-                                <option value="<?=$row["id"]?>"><?=$row["Name"]?></option>
-                                <?php endforeach ?>
-                            </select>
+                            <div class="input-group">
+                                <select class="form-control" name="selCategory">
+                                    <option value="" disabled selected>Choose category</option>
+                                    <?php foreach ($category_list as $row): ?>
+                                    <option value="<?=$row["id"]?>"><?=$row["Name"]?></option>
+                                    <?php endforeach ?>
+                                </select>
+                                <span class="input-group-btn">
+                                    <a href="../category/create.php?src=groceryitem-create" class="btn btn-success pull-right">New</a>
+                                </span>
+                            </div>
 
                             <span class="help-block"><?php echo $category_err;?></span>
                         </div>
                         <input type="submit" class="btn btn-primary" value="Submit">
-                        <a href="index.php" class="btn btn-default">Cancel</a>
+                        
+                        <?php
+                        if($src == "list-choosegroceries"){
+                            echo "<a href='../list/choosegroceries.php' class='btn btn-default'>Cancel</a>";
+                        }
+                        else {
+                            echo "<a href='index.php' class='btn btn-default'>Cancel</a>";
+                        }
+                        ?>
                     </form>
                 </div>
             </div>        

@@ -1,7 +1,7 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: ../login.php");
@@ -10,16 +10,16 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
 // Include config file
 require_once "../config.php";
- 
+
 // Define variables and initialize with empty values
 $name = $category = "";
 $name_err = $category_err = "";
- 
+
 // Processing form data when form is submitted
 if(isset($_POST["id"]) && !empty($_POST["id"])){
     // Get hidden input value
     $id = $_POST["id"];
-    
+
     // Validate name
     $input_name = trim($_POST["name"]);
     if(empty($input_name)){
@@ -29,21 +29,21 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     } else{
         $name = $input_name;
     }
-    
+
     // Validate category
     $input_category = trim($_POST["selCategory"]);
     if(empty($input_category)){
-        $category_err = "Please select a category.";     
+        $category_err = "Please select a category.";
     } else{
         $category = $input_category;
     }
-    
+
     // Check input errors before inserting in database
     if(empty($name_err) && empty($category_err)){
         // Prepare an update statement
         $sql = "UPDATE GroceryItem SET Name=:name, CatId=:catId, IsSelected=:isSelected, Quantity=:quantity WHERE id=:id";
-    
- 
+
+
         if($stmt = $pdo->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bindParam(":name", $param_name);
@@ -51,14 +51,14 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
             $stmt->bindParam(":isSelected", $param_isSelected);
             $stmt->bindParam(":quantity", $param_quantity);
             $stmt->bindParam(":id", $param_id);
-            
+
             // Set parameters
             $param_name = $name;
             $param_catId = $_POST['selCategory'];
             $param_isSelected = $isSelected;
             $param_quantity = $quantity;
             $param_id = $id;
-            
+
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records created successfully. Redirect to landing page
@@ -68,11 +68,11 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                 echo "Something went wrong. Please try again later.";
             }
         }
-         
+
         // Close statement
         unset($stmt);
     }
-    
+
     // Close connection
     unset($pdo);
 } else{
@@ -80,29 +80,29 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
         // Get URL parameter
         $id =  trim($_GET["id"]);
-        
+
         // Get category list
         if(empty($category_list)){
             $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"]);
             $smt->execute();
             $category_list = $smt->fetchAll();
         }
-        
+
         // Prepare a select statement
         $sql = "SELECT * FROM GroceryItem WHERE id = :id";
         if($stmt = $pdo->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bindParam(":id", $param_id);
-            
+
             // Set parameters
             $param_id = $id;
-            
+
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 if($stmt->rowCount() == 1){
                     /* Fetch result row as an associative array. Since the result set contains only one row, we don't need to use while loop */
                     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                
+
                     // Retrieve individual field value
                     $name = $row["Name"];
                     $catId = $row["CatId"];
@@ -110,28 +110,28 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     $quantity = $row["Quantity"];
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
-                    header("location: error.php");
+                    header("location: ../error.php");
                     exit();
                 }
-                
+
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
             }
         }
-        
+
         // Close statement
         unset($stmt);
-        
+
         // Close connection
         unset($pdo);
     }  else{
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: error.php");
+        header("location: ../error.php");
         exit();
     }
 }
 ?>
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,7 +165,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                             <label>Category</label>
 
                             <select class="form-control" name="selCategory">
-                                
+
                                 <?php foreach ($category_list as $row):
                                     if ($row["id"] == $catId) {
                                         echo "<option value='" . $row["id"] . "' selected>" . $row["Name"] . "</option>";
@@ -184,7 +184,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                         <a href="index.php" class="btn btn-default">Cancel</a>
                     </form>
                 </div>
-            </div>        
+            </div>
         </div>
     </div>
 </body>

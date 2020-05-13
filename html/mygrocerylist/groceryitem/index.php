@@ -50,7 +50,7 @@ require_once "../config.php";
                     </div>
                     <div class="page-header clearfix">
                         <h2 class="pull-left">Grocery Items</h2>
-                        <a href="create.php" class="btn btn-success pull-right">Add New Item</a>
+                        <a href="create.php?src=index" class="btn btn-success pull-right">Add New Item</a>
                     </div>
                     <?php
                     // Attempt select query execution

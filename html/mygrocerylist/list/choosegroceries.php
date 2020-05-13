@@ -60,43 +60,15 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
 
     // Close connection
     unset($pdo);
-} else{
+} else {
     // Check existence of id parameter before processing further
-    if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
+    if(isset($_GET["listId"]) && !empty(trim($_GET["listId"]))){
         // Get URL parameter
-        $id =  trim($_GET["id"]);
-
-        // Prepare a select statement
-        $sql = "SELECT * FROM GroceryList WHERE id = :id";
-        if($stmt = $pdo->prepare($sql)){
-            // Bind variables to the prepared statement as parameters
-            $stmt->bindParam(":id", $param_id);
-
-            // Set parameters
-            $param_id = $id;
-
-            // Attempt to execute the prepared statement
-            if($stmt->execute()){
-                if($stmt->rowCount() == 1){
-                    /* Fetch result row as an associative array. Since the result set contains only one row, we don't need to use while loop */
-                    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                    // Retrieve individual field value
-                    $name = $row["Name"];
-                } else{
-                    // URL doesn't contain valid id. Redirect to error page
-                    header("location: ../error.php");
-                    exit();
-                }
-
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
-            }
-        }
+        $id =  trim($_GET["listId"]);
 
         // Get category list
         if(empty($category_list)){
-            $smt = $pdo->prepare('SELECT * FROM ListCategory WHERE ListId = ' . $id);
+            $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"]);
             $smt->execute();
             $category_list = $smt->fetchAll();
         }
@@ -150,22 +122,71 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                         <a href="../" class="pull-right">Done</a>
                     </div>
                     <div class="page-header clearfix">
-                        <h2 class="pull-left"><?php echo $name;?></h2>
-                        <?php echo "<a href='choosegroceries.php?listId=" . $id . "' class='btn btn-success pull-right'>Add Grocery Items</a>";?>
+                        <h2 class="pull-left">Choose Groceries</h2>
+                        <?php echo "<a href='../groceryitem/create.php?id=" . $id . "' class='btn btn-success pull-right'>New Grocery Item</a>";?>
                     </div>
 
-                    <?php
-                    if(!empty($category_list)){
-                        echo "<p class='lead'><em>Records were found.</em></p>";
-                    } else{
-                        echo "<p class='lead'><em>No grocery items.</em></p>";
-                    }
-                    ?>
+                    <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
+                      <div class="panel-group">
+                          <div class="panel panel-default">
+
+                            <?php
+                            include "../config.php";
+
+                            foreach ($category_list as $row):
+                              echo "<div class='panel-heading'>\n";
+                              echo "  <h4 class='panel-title'>\n";
+                              echo "    <a data-toggle='collapse' href='#" . $row["Name"] . "'>" . $row["Name"] ."</a>\n";
+                              echo "  </h4>\n";
+                              echo "</div>\n";
+                              echo "<div id='"  . $row["Name"] . "' class='panel-collapse collapse'>\n";
+                              echo "  <ul class='list-group'>\n";
+
+                              $sql = "SELECT * FROM GroceryItem WHERE CatId = " . $row["id"];
+                              $smt = $pdo->prepare($sql);
+                              $smt->execute();
+                              $groceryitem_list = $smt->fetchAll();
+
+                              foreach ($groceryitem_list as $groceryitem_row):
+                                echo "    <li class='list-group-item'>" . $groceryitem_row["Name"] . "</li>\n";
+                              endforeach;
+
+                              unset($groceryitem_list);
+
+                              echo "  </ul>\n";
+                              echo "</div>\n";
+                            endforeach;
+                            ?>
+
+                          </div>
+                      </div>
+                    </form>
 <!--
+                    <form action="choosegroceries.php?listId=5" method="post">
+                      <div class="panel-group">
+                          <div class="panel panel-default">
+
+                            <div class='panel-heading'>
+                              <h4 class='panel-title'>
+                              <a data-toggle='collapse' href=''#collapse1'>Meat</a>
+                              </h4>
+                              </div>
+                              <div id='collapse1' class='panel-collapse collapse'>
+                              <ul class='list-group'>
+                              <li class='list-group-item'>One</li>
+                              <li class='list-group-item'>Two</li>
+                              <li class='list-group-item'>Three</li>
+                              </ul>
+                            </div>
+                          </div>
+                      </div>
+                    </form>
+
                     <p>Select category to add grocery items.</p>
                     <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
                         <div class="panel-group">
                             <div class="panel panel-default">
+
                                 <div class="panel-heading">
                                   <h4 class="panel-title">
                                     <a data-toggle="collapse" href="#collapse1">Collapsible list group</a>

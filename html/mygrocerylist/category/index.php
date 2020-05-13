@@ -50,11 +50,10 @@ require_once "../config.php";
                     </div>
                     <div class="page-header clearfix">
                         <h2 class="pull-left">Categories</h2>
-                        <a href="create.php" class="btn btn-success pull-right">Add New Category</a>
+                        <a href="create.php?src=index" class="btn btn-success pull-right">Add New Category</a>
                     </div>
                     <?php
                     // Attempt select query execution
-                    
                     $sql = "SELECT * FROM Category WHERE UserId = " . $_SESSION["id"];
                     if($result = $pdo->query($sql)){
                         if($result->rowCount() > 0){

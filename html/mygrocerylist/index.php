@@ -51,6 +51,7 @@ require_once "config.php";
                         <h2 class="pull-left">My Lists</h2>
                         <a href="create.php" class="btn btn-success pull-right">Add New List</a>
                     </div>
+                    <p>Click on a list name below to open the list.</p>
                     <?php
                     // Attempt select query execution
                     
@@ -71,8 +72,9 @@ require_once "config.php";
                                         //echo "<td>" . $row['id'] . "</td>";
                                         echo "<td><a href='list/list.php?id=". $row['id'] . "'>" . $row['Name'] . "</a></td>";
                                         echo "<td width='25%'>";
-                                            echo "<a href='update.php?id=". $row['id'] ."' title='Update Record' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
-                                            echo "<a href='delete.php?id=". $row['id'] ."' title='Delete Record' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
+                                            echo "<a href='update.php?id=". $row['id'] ."' title='Update List' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
+                                            echo "<a href='delete.php?id=". $row['id'] ."' title='Delete List' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
+                                            echo "<a href='delete.php?id=". $row['id'] ."' title='Print List' data-toggle='tooltip'><span class='glyphicon glyphicon-print'></span></a>";
                                         echo "</td>";
                                     echo "</tr>";
                                 }

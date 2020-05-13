@@ -27,6 +27,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $name = $input_name;
     }
     
+    // Get original source of request
+    $src = $_POST["src"];
+    
     // Check input errors before inserting in database
     if(empty($name_err) && empty($address_err) && empty($salary_err)){
         // Prepare an insert statement
@@ -44,7 +47,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records created successfully. Redirect to landing page
-                header("location: index.php");
+                if ($src == "groceryitem-create") {
+                    header("location: ../groceryitem/create.php");
+                }
+                else {
+                    header("location: index.php");
+                }
                 exit();
             } else{
                 echo "Something went wrong. Please try again later.";
@@ -57,6 +65,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     
     // Close connection
     unset($pdo);
+}else {
+    // Check existence of src parameter before processing further
+    if(isset($_GET["src"]) && !empty(trim($_GET["src"]))){
+        // Get URL parameter
+        $src =  trim($_GET["src"]);
+    }
 }
 ?>
  
@@ -87,10 +101,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
                             <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
+                            <input type="hidden" name="src" class="form-control" value="<?php echo $src; ?>">
                             <span class="help-block"><?php echo $name_err;?></span>
                         </div>
                         <input type="submit" class="btn btn-primary" value="Submit">
-                        <a href="index.php" class="btn btn-default">Cancel</a>
+                        <?php
+                        if($src == "groceryitem-create"){
+                            echo "<a href='../groceryitem/create.php' class='btn btn-default'>Cancel</a>";
+                        }
+                        else {
+                            echo "<a href='index.php' class='btn btn-default'>Cancel</a>";
+                        }
+                        ?>
                     </form>
                 </div>
             </div>        
