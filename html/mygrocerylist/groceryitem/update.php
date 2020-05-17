@@ -83,7 +83,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
 
         // Get category list
         if(empty($category_list)){
-            $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"]);
+            $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"] . ' ORDER BY Name');
             $smt->execute();
             $category_list = $smt->fetchAll();
         }
@@ -110,7 +110,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     $quantity = $row["Quantity"];
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
-                    header("location: ../error.php");
+                    header("location: ../error.php?sender=groceryitem update1");
                     exit();
                 }
 
@@ -126,7 +126,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         unset($pdo);
     }  else{
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: ../error.php");
+        header("location: ../error.php?sender=groceryitem update2");
         exit();
     }
 }

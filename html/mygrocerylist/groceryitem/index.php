@@ -1,7 +1,7 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: ../login.php");
@@ -35,7 +35,7 @@ require_once "../config.php";
     </style>
     <script type="text/javascript">
         $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip();   
+            $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
 </head>
@@ -69,11 +69,11 @@ require_once "../config.php";
                                 while($row = $result->fetch()){
                                     echo "<tr>";
                                         echo "<td>" . $row['Name'] . "</td>";
-                                        
-                                        $smt = $pdo->prepare('SELECT * FROM Category WHERE id = ' . $row['CatId']);
+
+                                        $smt = $pdo->prepare('SELECT * FROM Category WHERE id = ' . $row['CatId'] . ' ORDER BY Name');
                                         $smt->execute();
                                         $data = $smt->fetch();
-                                        
+
                                         echo "<td>" . $data['Name'] . "</td>";
                                         echo "<td width='25%'>";
                                             echo "<a href='update.php?id=". $row['id'] ."' title='Update Record' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
@@ -81,7 +81,7 @@ require_once "../config.php";
                                         echo "</td>";
                                     echo "</tr>";
                                 }
-                                echo "</tbody>";                            
+                                echo "</tbody>";
                             echo "</table>";
                             // Free result set
                             unset($result);
@@ -91,12 +91,12 @@ require_once "../config.php";
                     } else{
                         echo "ERROR: Could not able to execute $sql. " . $mysqli->error;
                     }
-                    
+
                     // Close connection
                     unset($pdo);
                     ?>
                 </div>
-            </div>        
+            </div>
         </div>
     </div>
 </body>

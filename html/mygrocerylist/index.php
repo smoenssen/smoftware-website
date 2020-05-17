@@ -1,7 +1,7 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
@@ -35,7 +35,7 @@ require_once "config.php";
     </style>
     <script type="text/javascript">
         $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip();   
+            $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
 </head>
@@ -54,7 +54,7 @@ require_once "config.php";
                     <p>Click on a list name below to open the list.</p>
                     <?php
                     // Attempt select query execution
-                    
+
                     $sql = "SELECT * FROM GroceryList WHERE UserId = " . $_SESSION["id"];
                     if($result = $pdo->query($sql)){
                         if($result->rowCount() > 0){
@@ -70,7 +70,7 @@ require_once "config.php";
                                 while($row = $result->fetch()){
                                     echo "<tr>";
                                         //echo "<td>" . $row['id'] . "</td>";
-                                        echo "<td><a href='list/list.php?id=". $row['id'] . "'>" . $row['Name'] . "</a></td>";
+                                        echo "<td><a href='list/list.php?listId=". $row['id'] . "'>" . $row['Name'] . "</a></td>";
                                         echo "<td width='25%'>";
                                             echo "<a href='update.php?id=". $row['id'] ."' title='Update List' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
                                             echo "<a href='delete.php?id=". $row['id'] ."' title='Delete List' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
@@ -78,7 +78,7 @@ require_once "config.php";
                                         echo "</td>";
                                     echo "</tr>";
                                 }
-                                echo "</tbody>";                            
+                                echo "</tbody>";
                             echo "</table>";
                             // Free result set
                             unset($result);
@@ -88,12 +88,12 @@ require_once "config.php";
                     } else{
                         echo "ERROR: Could not able to execute $sql. " . $mysqli->error;
                     }
-                    
+
                     // Close connection
                     unset($pdo);
                     ?>
                 </div>
-            </div>        
+            </div>
         </div>
     </div>
 </body>

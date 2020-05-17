@@ -1,7 +1,7 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: ../login.php");
@@ -35,7 +35,7 @@ require_once "../config.php";
     </style>
     <script type="text/javascript">
         $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip();   
+            $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
 </head>
@@ -54,7 +54,7 @@ require_once "../config.php";
                     </div>
                     <?php
                     // Attempt select query execution
-                    $sql = "SELECT * FROM Category WHERE UserId = " . $_SESSION["id"];
+                    $sql = "SELECT * FROM Category WHERE UserId = " . $_SESSION["id"] . " ORDER BY Name";
                     if($result = $pdo->query($sql)){
                         if($result->rowCount() > 0){
                             echo "<table class='table table-bordered table-striped'>";
@@ -76,7 +76,7 @@ require_once "../config.php";
                                         echo "</td>";
                                     echo "</tr>";
                                 }
-                                echo "</tbody>";                            
+                                echo "</tbody>";
                             echo "</table>";
                             // Free result set
                             unset($result);
@@ -86,12 +86,12 @@ require_once "../config.php";
                     } else{
                         echo "ERROR: Could not able to execute $sql. " . $mysqli->error;
                     }
-                    
+
                     // Close connection
                     unset($pdo);
                     ?>
                 </div>
-            </div>        
+            </div>
         </div>
     </div>
 </body>

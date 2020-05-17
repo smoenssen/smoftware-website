@@ -1,3 +1,24 @@
+
+<?php
+// Initialize the session
+session_start();
+
+// Include config file
+require_once "config.php";
+
+// Define variables and initialize with empty values
+$sender = "";
+
+// Processing form data when form is submitted
+if(isset($_GET["sender"]) && !empty(trim($_GET["sender"]))){
+    // Get URL parameter
+    $sender =  trim($_GET["sender"]);
+
+    // Close connection
+    unset($pdo);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,10 +42,17 @@
                         <h1>Invalid Request</h1>
                     </div>
                     <div class="alert alert-danger fade in">
-                        <p>Sorry, you've made an invalid request. Please <a href="index.php" class="alert-link">go back</a> and try again.</p>
+                      <?php
+                      if (empty($sender)){
+                        echo "<p>Sorry, you've made an invalid request. Please <a href='index.php' class='alert-link'>go back</a> and try again.</p>";
+                      }
+                      else {
+                        echo "<p>Sorry, you've made an invalid request (sender = " . $sender . "). Please <a href='index.php' class='alert-link'>go back</a> and try again.</p>";
+                      }
+                      ?>
                     </div>
                 </div>
-            </div>        
+            </div>
         </div>
     </div>
 </body>

@@ -85,7 +85,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     $name = $row["Name"];
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
-                    header("location: ../error.php");
+                    header("location: ../error.php?sender=category update1");
                     exit();
                 }
 
@@ -101,7 +101,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         unset($pdo);
     }  else{
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: ../error.php");
+        header("location: ../error.php?sender=category update2");
         exit();
     }
 }

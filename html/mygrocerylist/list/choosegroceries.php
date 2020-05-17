@@ -16,59 +16,80 @@ $name = "";
 $name_err = "";
 
 // Processing form data when form is submitted
-if(isset($_POST["id"]) && !empty($_POST["id"])){
-    // Get hidden input value
-    $id = $_POST["id"];
+if(isset($_POST['id'])){
+    if(!empty($_POST['data'])) {
 
-    // Validate name
-    $input_name = trim($_POST["name"]);
-    if(empty($input_name)){
-        $name_err = "Please enter a name.";
-    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z\s]+$/")))){
-        $name_err = "Please enter a valid name.";
-    } else{
-        $name = $input_name;
-    }
+      $listId = $_POST['id'];
 
-    // Check input errors before inserting in database
-    if(empty($name_err)){
-        // Prepare an update statement
-        $sql = "UPDATE GroceryList SET Name=:name WHERE id=:id";
+      // First delete all items for this list. This handles the case
+      // where items were unchecked. I'm not sure of a better way.
+      $sql = "DELETE FROM ListCategoryGroceryItem WHERE listId = :listId";
 
-        if($stmt = $pdo->prepare($sql)){
-            // Bind variables to the prepared statement as parameters
-            $stmt->bindParam(":name", $param_name);
-            $stmt->bindParam(":id", $param_id);
+      if($stmt = $pdo->prepare($sql)){
+          // Bind variables to the prepared statement as parameters
+          $stmt->bindParam(":listId", $param_listId);
 
-            // Set parameters
-            $param_name = $name;
-            $param_id = $id;
+          // Set parameters
+          $param_listId = $listId;
 
-            // Attempt to execute the prepared statement
-            if($stmt->execute()){
-                // Records updated successfully. Redirect to landing page
-                header("location: index.php");
-                exit();
-            } else{
-                echo "Something went wrong. Please try again later.";
-            }
+          // Attempt to execute the prepared statement
+          if(!$stmt->execute()){
+            echo "Something went wrong. Please try again later.";
+          }
+
+          unset($stm);
         }
 
-        // Close statement
-        unset($stmt);
-    }
+        // Now loop through all selected items
+        foreach($_POST['data'] as $value){
+          $array = explode(';', $value);
+          $groceryItemId = $array[0];
+          $catId = $array[1];
 
-    // Close connection
-    unset($pdo);
+          // Make sure this item isn't already in the list1
+          $sql = "SELECT * FROM ListCategoryGroceryItem WHERE GroceryItemId = ". $groceryItemId . " AND ListId = " . $listId;
+          if($result = $pdo->query($sql)){
+            if ($result->rowCount() == 0) {
+              // Prepare an insert statement
+              $sql = "INSERT INTO ListCategoryGroceryItem (GroceryItemId, IsPurchased, Quantity, ListId, CatId) VALUES (:groceryItemId, 0, 1, :listId, :catId)";
+
+              if($stmt = $pdo->prepare($sql)){
+                  // Bind variables to the prepared statement as parameters
+                  $stmt->bindParam(":groceryItemId", $param_groceryItemId);
+                  $stmt->bindParam(":catId", $param_catId);
+                  $stmt->bindParam(":listId", $param_listId);
+
+                  // Set parameters
+                  $param_groceryItemId = $groceryItemId;
+                  $param_catId = $catId;
+                  $param_listId = $listId;
+
+                  // Attempt to execute the prepared statement
+                  if($stmt->execute()){
+                      // Records created successfully. Redirect to landing page
+                      header("location: list.php?listId=" . $listId);
+                  } else {
+                      echo "Something went wrong. Please try again later.";
+                  }
+
+                  unset($stm);
+              }
+            }
+          }
+        }
+
+        // Close connection
+        unset($pdo);
+    }
 } else {
-    // Check existence of id parameter before processing further
+    // Check existence of list id parameter before processing further
     if(isset($_GET["listId"]) && !empty(trim($_GET["listId"]))){
         // Get URL parameter
-        $id =  trim($_GET["listId"]);
+        $listId =  trim($_GET["listId"]);
 
         // Get category list
         if(empty($category_list)){
-            $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"]);
+            $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"] . ' ORDER BY Name');
             $smt->execute();
             $category_list = $smt->fetchAll();
         }
@@ -80,7 +101,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         unset($pdo);
     }  else{
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: ../error.php");
+        header("location: ../error.php?sender=list choosegroceries");
         exit();
     }
 }
@@ -106,6 +127,18 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         table tr td:last-child a{
             margin-right: 15px;
         }
+        div.panel-group  {
+          background-color: rgb(22, 219, 147);
+        }
+        div.custom-control  {
+            padding: 8px;
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 0px;
+            border-bottom: 1px;
+            border-style: solid;
+            border-color: rgb(221, 221, 221);
+        }
     </style>
     <script type="text/javascript">
         $(document).ready(function(){
@@ -123,14 +156,16 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     </div>
                     <div class="page-header clearfix">
                         <h2 class="pull-left">Choose Groceries</h2>
-                        <?php echo "<a href='../groceryitem/create.php?id=" . $id . "' class='btn btn-success pull-right'>New Grocery Item</a>";?>
+                        <?php echo "<a href='../groceryitem/create.php?id=" . $listId . "' class='btn btn-success pull-right'>New Grocery Item</a>";?>
                     </div>
 
+                    <p>Select grocery items from the categories below. Then click Submit.</p>
                     <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
                       <div class="panel-group">
                           <div class="panel panel-default">
 
                             <?php
+                            // Open connection
                             include "../config.php";
 
                             foreach ($category_list as $row):
@@ -142,81 +177,46 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                               echo "<div id='"  . $row["Name"] . "' class='panel-collapse collapse'>\n";
                               echo "  <ul class='list-group'>\n";
 
-                              $sql = "SELECT * FROM GroceryItem WHERE CatId = " . $row["id"];
+                              $sql = "SELECT * FROM GroceryItem WHERE CatId = " . $row["id"] . " ORDER BY Name";
                               $smt = $pdo->prepare($sql);
                               $smt->execute();
                               $groceryitem_list = $smt->fetchAll();
 
                               foreach ($groceryitem_list as $groceryitem_row):
-                                echo "    <li class='list-group-item'>" . $groceryitem_row["Name"] . "</li>\n";
+                                // data is a delimited list of grocery item id and category id
+                                echo "    <div class='custom-control custom-checkbox'>\n";
+
+                                // Set item checked or unchecked based on if it is in the list or not
+                                $sql = "SELECT * FROM ListCategoryGroceryItem WHERE GroceryItemId = ". $groceryitem_row["id"] . " AND ListId = " . $listId;
+                                $result = $pdo->query($sql);
+                                if ($result->rowCount() == 0) {
+                                  echo "      <input type='checkbox' class='custom-control-input' name='data[]' value='" . $groceryitem_row["id"] . ";" . $groceryitem_row["CatId"] . "'>\n";
+                                }
+                                else {
+                                  echo "      <input type='checkbox' class='custom-control-input' name='data[]' value='" . $groceryitem_row["id"] . ";" . $groceryitem_row["CatId"] . "' checked>\n";
+                                }
+
+                                echo "      <label class='custom-control-label' for='" . $groceryitem_row["id"] . "'>" . $groceryitem_row["Name"] . "</label>\n";
+                                echo "    </div>\n";
                               endforeach;
 
                               unset($groceryitem_list);
+                              unset($smt);
 
                               echo "  </ul>\n";
                               echo "</div>\n";
                             endforeach;
+
+                            // Close connection
+                            unset($pdo);
                             ?>
 
                           </div>
                       </div>
+                      <input type="hidden" name="id" value="<?php echo $listId; ?>"/>
+                      <input type="submit" class="btn btn-primary" value="Submit">
+                      <a href="list.php?listId=<?php echo $listId;?>" class="btn btn-default">Cancel</a>
                     </form>
-<!--
-                    <form action="choosegroceries.php?listId=5" method="post">
-                      <div class="panel-group">
-                          <div class="panel panel-default">
-
-                            <div class='panel-heading'>
-                              <h4 class='panel-title'>
-                              <a data-toggle='collapse' href=''#collapse1'>Meat</a>
-                              </h4>
-                              </div>
-                              <div id='collapse1' class='panel-collapse collapse'>
-                              <ul class='list-group'>
-                              <li class='list-group-item'>One</li>
-                              <li class='list-group-item'>Two</li>
-                              <li class='list-group-item'>Three</li>
-                              </ul>
-                            </div>
-                          </div>
-                      </div>
-                    </form>
-
-                    <p>Select category to add grocery items.</p>
-                    <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
-                        <div class="panel-group">
-                            <div class="panel panel-default">
-
-                                <div class="panel-heading">
-                                  <h4 class="panel-title">
-                                    <a data-toggle="collapse" href="#collapse1">Collapsible list group</a>
-                                    <a href='update.php?id=1' title='Add grocery item' data-toggle='tooltip' class='pull-right'><span class='glyphicon glyphicon-pencil'></span></a>
-                                  </h4>
-                                </div>
-                                <div id="collapse1" class="panel-collapse collapse">
-                                  <ul class="list-group">
-                                    <li class="list-group-item">One</li>
-                                    <li class="list-group-item">Two</li>
-                                    <li class="list-group-item">Three</li>
-                                  </ul>
-                                </div>
-
-                                <div class="panel-heading">
-                                  <h4 class="panel-title">
-                                    <a data-toggle="collapse" href="#collapse2">Collapsible list group</a>
-                                  </h4>
-                                </div>
-                                <div id="collapse2" class="panel-collapse collapse">
-                                  <ul class="list-group">
-                                    <li class="list-group-item">Four</li>
-                                    <li class="list-group-item">Five</li>
-                                    <li class="list-group-item">Six</li>
-                                  </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
--->
                 </div>
             </div>
         </div>

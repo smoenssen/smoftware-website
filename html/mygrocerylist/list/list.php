@@ -16,9 +16,9 @@ $name = "";
 $name_err = "";
 
 // Processing form data when form is submitted
-if(isset($_POST["id"]) && !empty($_POST["id"])){
+if(isset($_POST["listId"]) && !empty($_POST["listId"])){
     // Get hidden input value
-    $id = $_POST["id"];
+    $listId = $_POST["listId"];
 
     // Validate name
     $input_name = trim($_POST["name"]);
@@ -38,11 +38,11 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         if($stmt = $pdo->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bindParam(":name", $param_name);
-            $stmt->bindParam(":id", $param_id);
+            $stmt->bindParam(":id", $param_listId);
 
             // Set parameters
             $param_name = $name;
-            $param_id = $id;
+            $param_listId = $listId;
 
             // Attempt to execute the prepared statement
             if($stmt->execute()){
@@ -61,56 +61,42 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     // Close connection
     unset($pdo);
 } else{
-    // Check existence of id parameter before processing further
-    if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
-        // Get URL parameter
-        $id =  trim($_GET["id"]);
+  // Check existence of list id parameter before processing further
+  if(isset($_GET["listId"]) && !empty(trim($_GET["listId"]))){
+      // Get URL parameter
+      $listId =  trim($_GET["listId"]);
 
-        // Prepare a select statement
-        $sql = "SELECT * FROM GroceryList WHERE id = :id";
-        if($stmt = $pdo->prepare($sql)){
-            // Bind variables to the prepared statement as parameters
-            $stmt->bindParam(":id", $param_id);
+      $sql = "Select * FROM GroceryList where id = " . $listId;
+      $smt = $pdo->prepare($sql);
+      $smt->execute();
+      if ($smt->rowCount() == 1) {
+        $row = $smt->fetch(PDO::FETCH_ASSOC);
+        $name = $row["Name"];
+      }
 
-            // Set parameters
-            $param_id = $id;
+      // Get category list. Only include categories that have grocery items selected
 
-            // Attempt to execute the prepared statement
-            if($stmt->execute()){
-                if($stmt->rowCount() == 1){
-                    /* Fetch result row as an associative array. Since the result set contains only one row, we don't need to use while loop */
-                    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      $sql = "SELECT DISTINCT c.id, c.Name, c.Icon, c.IsSelected FROM Category c
+              INNER JOIN ListCategoryGroceryItem l ON l.CatId = c.id
+              WHERE l.ListId = " . $listId . " ORDER BY c.Name";
 
-                    // Retrieve individual field value
-                    $name = $row["Name"];
-                } else{
-                    // URL doesn't contain valid id. Redirect to error page
-                    header("location: ../error.php");
-                    exit();
-                }
+      if(empty($category_list)){
+          //$sql = 'SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"] . ' ORDER BY Name'
+          $smt = $pdo->prepare($sql);
+          $smt->execute();
+          $category_list = $smt->fetchAll();
+      }
 
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
-            }
-        }
+      // Close statement
+      unset($stmt);
 
-        // Get category list
-        if(empty($category_list)){
-            $smt = $pdo->prepare('SELECT * FROM ListCategory WHERE ListId = ' . $id);
-            $smt->execute();
-            $category_list = $smt->fetchAll();
-        }
-
-        // Close statement
-        unset($stmt);
-
-        // Close connection
-        unset($pdo);
-    }  else{
-        // URL doesn't contain id parameter. Redirect to error page
-        header("location: ../error.php");
-        exit();
-    }
+      // Close connection
+      unset($pdo);
+  }  else{
+      // URL doesn't contain id parameter. Redirect to error page
+      header("location: ../error.php?sender=list1");
+      exit();
+  }
 }
 ?>
 
@@ -138,7 +124,64 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     <script type="text/javascript">
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
+
+            // Is purchased
+            $('.ispurchased').click(function(){
+              var id = this.id;
+              alert(this.id);
+
+              //TODO from code below...
+            });
         });
+
+        function myAjax() {
+          alert("CLICK1");
+              $.ajax({
+                   type: "POST",
+                   url: 'markGroceryItemPurchased.php',
+                   data:{listId:'call_this'},
+                   success:function(html) {
+                     alert(html);
+                   }
+
+              });
+         }
+/*
+         $(document).ready(function(){
+
+           // Is purchased
+           $('.ispurchased').click(function(){
+
+             alert("CLICK2");
+
+             var el = this;
+             var id = this.id;
+             var splitid = id.split("_");
+
+             // Delete id
+             var deleteid = splitid[1];
+
+             // AJAX Request
+             $.ajax({
+               url: 'remove.php',
+               type: 'POST',
+               data: { id:deleteid },
+               success: function(response){
+
+                 if(response == 1){
+          	 // Remove row from HTML Table
+          	 $(el).closest('tr').css('background','tomato');
+          	 $(el).closest('tr').fadeOut(800,function(){
+          	    $(this).remove();
+          	 });
+                }else{
+          	 alert('Invalid ID.');
+                }
+
+              }
+             });
+           });
+        });*/
     </script>
 </head>
 <body>
@@ -151,51 +194,78 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     </div>
                     <div class="page-header clearfix">
                         <h2 class="pull-left"><?php echo $name;?></h2>
-                        <?php echo "<a href='choosegroceries.php?listId=" . $id . "' class='btn btn-success pull-right'>Add Grocery Items</a>";?>
+                        <?php echo "<a href='choosegroceries.php?listId=" . $listId . "' class='btn btn-success pull-right'>Add Grocery Items</a>";?>
                     </div>
 
                     <?php
                     if(!empty($category_list)){
-                        echo "<p class='lead'><em>Records were found.</em></p>";
-                    } else{
+                      echo "<p>Please select grocery items and submit to update the list.</p>\n";
+                      echo "<form action='htmlspecialchars(basename(" . $_SERVER['REQUEST_URI'] . ")) ' method='post'>\n";
+                      echo "  <div class='panel-group'>\n";
+                      echo "     <div class='panel panel-default'>\n";
+                              // Open connection
+                              include "../config.php";
+
+                              foreach ($category_list as $row):
+                                echo "<div class='panel-heading'>\n";
+                                echo "  <h4 class='panel-title'>\n";
+                                echo "    <a data-toggle='collapse' href='#" . $row["Name"] . "'>" . $row["Name"] ."</a>\n";
+                                echo "  </h4>\n";
+                                echo "</div>\n";
+                                echo "<div id='"  . $row["Name"] . "' class='panel-collapse collapse'>\n";
+                                echo "  <ul class='list-group'>\n";
+
+                                $sql = "SELECT * FROM GroceryItem WHERE CatId = " . $row["id"] . " ORDER BY Name";
+                                $smt = $pdo->prepare($sql);
+                                $smt->execute();
+                                $groceryitem_list = $smt->fetchAll();
+
+                                foreach ($groceryitem_list as $groceryitem_row):
+
+                                  // Set item checked or unchecked based on if it is in the list or not
+                                  $sql = "SELECT * FROM ListCategoryGroceryItem WHERE GroceryItemId = ". $groceryitem_row["id"] . " AND ListId = " . $listId;
+                                  $result = $pdo->query($sql);
+                                  if ($result->rowCount() == 1) {
+                                    $listCategoryGroceryItemRow = $result->fetch();
+
+                                    // data is a delimited list of grocery item id and category id
+                                    //echo "    <div class='custom-control custom-checkbox'>\n";
+                                    //echo "      <input type='checkbox' class='custom-control-input' name='data[]' value='" . $groceryitem_row["id"] . ";" . $groceryitem_row["CatId"] . "' checked>\n";
+                                    //echo "      <label class='custom-control-label' for='" . $groceryitem_row["id"] . "'>" . $groceryitem_row["Name"] . "</label>\n";
+                                    //echo "    </div>\n";
+
+                                    echo "      <a class='list-group-item clearfix'>\n";
+                                    echo          $groceryitem_row['Name'] . "\n";
+                                    echo "          <span class='pull-right'> \n";
+                                    //echo "              <span class='btn btn-xs btn-default is-purchased' id='" . $listCategoryGroceryItemRow["GroceryItemId"] . ";" . $listCategoryGroceryItemRow["ListId"] . " onclick=\"myAjax(); event.stopPropagation();\">\n";
+                                    echo "              <span class='btn btn-xs btn-default ispurchased' id='" . $listCategoryGroceryItemRow["GroceryItemId"] . ";" . $listCategoryGroceryItemRow["ListId"] . "'>\n";
+                                    echo "          <span class='glyphicon glyphicon-remove' aria-hidden='true'></span>\n";
+                                    echo "          </span>\n";
+                                    echo "      </a>\n";
+                                  }
+
+                                endforeach;
+
+                                unset($groceryitem_list);
+                                unset($smt);
+
+                                echo "  </ul>\n";
+                                echo "</div>\n";
+                              endforeach;
+
+                              // Close connection
+                              unset($pdo);
+
+                    echo "        </div>\n";
+                    echo "    </div>\n";
+                    echo "    <input type='hidden' name='id' value='" . $listId . "'/>\n";
+                    echo "    <input type='submit' class='btn btn-primary' value='Submit'>\n";
+                    echo "    <a href='../' class='btn btn-default'>Cancel</a>\n";
+                    echo "  </form>\n";
+                    } else {
                         echo "<p class='lead'><em>No grocery items.</em></p>";
                     }
                     ?>
-<!--
-                    <p>Select category to add grocery items.</p>
-                    <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
-                        <div class="panel-group">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                  <h4 class="panel-title">
-                                    <a data-toggle="collapse" href="#collapse1">Collapsible list group</a>
-                                    <a href='update.php?id=1' title='Add grocery item' data-toggle='tooltip' class='pull-right'><span class='glyphicon glyphicon-pencil'></span></a>
-                                  </h4>
-                                </div>
-                                <div id="collapse1" class="panel-collapse collapse">
-                                  <ul class="list-group">
-                                    <li class="list-group-item">One</li>
-                                    <li class="list-group-item">Two</li>
-                                    <li class="list-group-item">Three</li>
-                                  </ul>
-                                </div>
-
-                                <div class="panel-heading">
-                                  <h4 class="panel-title">
-                                    <a data-toggle="collapse" href="#collapse2">Collapsible list group</a>
-                                  </h4>
-                                </div>
-                                <div id="collapse2" class="panel-collapse collapse">
-                                  <ul class="list-group">
-                                    <li class="list-group-item">Four</li>
-                                    <li class="list-group-item">Five</li>
-                                    <li class="list-group-item">Six</li>
-                                  </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
--->
                 </div>
             </div>
         </div>

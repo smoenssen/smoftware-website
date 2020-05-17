@@ -1,7 +1,7 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: ../login.php");
@@ -10,20 +10,20 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
 // Include config file
 require_once "../config.php";
- 
+
 // Define variables and initialize with empty values
 $name = $category = "";
 $name_err = $category_err = "";
- 
+
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-    
+
     if(empty($category_list)){
-        $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"]);
+        $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"] . ' ORDER BY Name');
         $smt->execute();
         $category_list = $smt->fetchAll();
     }
-                            
+
     // Validate name
     $input_name = trim($_POST["name"]);
     if(empty($input_name)){
@@ -33,31 +33,31 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else{
         $name = $input_name;
     }
-    
+
     // Validate category
     $input_category = trim($_POST["selCategory"]);
     if(empty($input_category)){
-        $category_err = "Please select a category.";     
+        $category_err = "Please select a category.";
     } else{
         $category = $input_category;
     }
-                            
+
     // Check input errors before inserting in database
     if(empty($name_err) && empty($category_err)){
         // Prepare an insert statement
         $sql = "INSERT INTO GroceryItem (Name, CatId, IsSelected, Quantity, UserId) VALUES (:name, :catId, 0, 1, :userId)";
- 
+
         if($stmt = $pdo->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bindParam(":name", $param_name);
             $stmt->bindParam(":catId", $param_catId);
             $stmt->bindParam(":userId", $param_user_id);
-            
+
             // Set parameters
             $param_name = $name;
             $param_catId = $_POST['selCategory'];
             $param_user_id = $_SESSION["id"];
-            
+
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records created successfully. Redirect to landing page
@@ -67,17 +67,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 echo "Something went wrong. Please try again later.";
             }
         }
-         
+
         // Close statement
         unset($stmt);
     }
-    
+
     // Close connection
     unset($pdo);
 }
 ?>
 
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -109,11 +109,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         </div>
                         <div class="form-group <?php echo (!empty($category_err)) ? 'has-error' : ''; ?>">
                             <label>Category</label>
-    
+
                             <?php
                             // Get category list
                             if(empty($category_list)){
-                                $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"]);
+                                $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"] . ' ORDER BY Name');
                                 $smt->execute();
                                 $category_list = $smt->fetchAll();
                             }
@@ -131,7 +131,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <a href="index.php" class="btn btn-default">Cancel</a>
                     </form>
                 </div>
-            </div>        
+            </div>
         </div>
     </div>
 </body>
