@@ -60,7 +60,7 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
 
     // Close connection
     unset($pdo);
-} else{
+} else {
   // Check existence of list id parameter before processing further
   if(isset($_GET["listId"]) && !empty(trim($_GET["listId"]))){
       // Get URL parameter
@@ -127,61 +127,31 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
 
             // Is purchased
             $('.ispurchased').click(function(){
-              var id = this.id;
-              alert(this.id);
+              // id is <grocery item id>;<list id>;<is purchased>
+              var str = this.id;
+              var res = str.split(";");
+              var groceryItemId = res[0];
+              var listId = res[1];
+              var isPurchased = res[2];
 
-              //TODO from code below...
+              jQuery.ajax({
+                type: "POST",
+                url: 'markGroceryItemPurchased.php',
+                dataType: 'json',
+                data: { groceryItemId: groceryItemId, listId: listId, isPurchased: isPurchased },
+/*
+                success: function(response)
+                {
+                  alert("Record successfully updated");
+                },
+                error: function(xhr, status, error) {
+                  alert(xhr.responseText);
+                }*/
+              });
+
+              window.location.reload();
             });
         });
-
-        function myAjax() {
-          alert("CLICK1");
-              $.ajax({
-                   type: "POST",
-                   url: 'markGroceryItemPurchased.php',
-                   data:{listId:'call_this'},
-                   success:function(html) {
-                     alert(html);
-                   }
-
-              });
-         }
-/*
-         $(document).ready(function(){
-
-           // Is purchased
-           $('.ispurchased').click(function(){
-
-             alert("CLICK2");
-
-             var el = this;
-             var id = this.id;
-             var splitid = id.split("_");
-
-             // Delete id
-             var deleteid = splitid[1];
-
-             // AJAX Request
-             $.ajax({
-               url: 'remove.php',
-               type: 'POST',
-               data: { id:deleteid },
-               success: function(response){
-
-                 if(response == 1){
-          	 // Remove row from HTML Table
-          	 $(el).closest('tr').css('background','tomato');
-          	 $(el).closest('tr').fadeOut(800,function(){
-          	    $(this).remove();
-          	 });
-                }else{
-          	 alert('Invalid ID.');
-                }
-
-              }
-             });
-           });
-        });*/
     </script>
 </head>
 <body>
@@ -199,7 +169,7 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
 
                     <?php
                     if(!empty($category_list)){
-                      echo "<p>Please select grocery items and submit to update the list.</p>\n";
+                      echo "<p>Please check off grocery items as they are purchased.</p>\n";
                       echo "<form action='htmlspecialchars(basename(" . $_SERVER['REQUEST_URI'] . ")) ' method='post'>\n";
                       echo "  <div class='panel-group'>\n";
                       echo "     <div class='panel panel-default'>\n";
@@ -212,7 +182,7 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
                                 echo "    <a data-toggle='collapse' href='#" . $row["Name"] . "'>" . $row["Name"] ."</a>\n";
                                 echo "  </h4>\n";
                                 echo "</div>\n";
-                                echo "<div id='"  . $row["Name"] . "' class='panel-collapse collapse'>\n";
+                                echo "<div id='"  . $row["Name"] . "' class='panel-collapse collapse in'>\n";
                                 echo "  <ul class='list-group'>\n";
 
                                 $sql = "SELECT * FROM GroceryItem WHERE CatId = " . $row["id"] . " ORDER BY Name";
@@ -228,18 +198,26 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
                                   if ($result->rowCount() == 1) {
                                     $listCategoryGroceryItemRow = $result->fetch();
 
-                                    // data is a delimited list of grocery item id and category id
-                                    //echo "    <div class='custom-control custom-checkbox'>\n";
-                                    //echo "      <input type='checkbox' class='custom-control-input' name='data[]' value='" . $groceryitem_row["id"] . ";" . $groceryitem_row["CatId"] . "' checked>\n";
-                                    //echo "      <label class='custom-control-label' for='" . $groceryitem_row["id"] . "'>" . $groceryitem_row["Name"] . "</label>\n";
-                                    //echo "    </div>\n";
-
                                     echo "      <a class='list-group-item clearfix'>\n";
-                                    echo          $groceryitem_row['Name'] . "\n";
+
+                                    if ($listCategoryGroceryItemRow['IsPurchased'] == 1) {
+                                      echo "         <del>" . $groceryitem_row['Name'] . "</del>\n";
+                                    }
+                                    else {
+                                      echo          $groceryitem_row['Name'] . "\n";
+                                    }
+
                                     echo "          <span class='pull-right'> \n";
-                                    //echo "              <span class='btn btn-xs btn-default is-purchased' id='" . $listCategoryGroceryItemRow["GroceryItemId"] . ";" . $listCategoryGroceryItemRow["ListId"] . " onclick=\"myAjax(); event.stopPropagation();\">\n";
-                                    echo "              <span class='btn btn-xs btn-default ispurchased' id='" . $listCategoryGroceryItemRow["GroceryItemId"] . ";" . $listCategoryGroceryItemRow["ListId"] . "'>\n";
-                                    echo "          <span class='glyphicon glyphicon-remove' aria-hidden='true'></span>\n";
+
+                                    if ($listCategoryGroceryItemRow['IsPurchased'] == 1) {
+                                      echo "              <span class='btn btn-xs btn-default ispurchased' style='border:none;' id='" . $listCategoryGroceryItemRow["GroceryItemId"] . ";" . $listCategoryGroceryItemRow["ListId"] . ";0'>\n";
+                                      echo "          <span class='glyphicon glyphicon-check' aria-hidden='true'></span>\n";
+                                    }
+                                    else {
+                                      echo "              <span class='btn btn-xs btn-default ispurchased' style='border:none;' id='" . $listCategoryGroceryItemRow["GroceryItemId"] . ";" . $listCategoryGroceryItemRow["ListId"] . ";1'>\n";
+                                      echo "          <span class='glyphicon glyphicon-unchecked' aria-hidden='true'></span>\n";
+                                    }
+
                                     echo "          </span>\n";
                                     echo "      </a>\n";
                                   }
@@ -258,9 +236,6 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
 
                     echo "        </div>\n";
                     echo "    </div>\n";
-                    echo "    <input type='hidden' name='id' value='" . $listId . "'/>\n";
-                    echo "    <input type='submit' class='btn btn-primary' value='Submit'>\n";
-                    echo "    <a href='../' class='btn btn-default'>Cancel</a>\n";
                     echo "  </form>\n";
                     } else {
                         echo "<p class='lead'><em>No grocery items.</em></p>";

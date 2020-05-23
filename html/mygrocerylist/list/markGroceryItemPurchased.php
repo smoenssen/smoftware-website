@@ -1,4 +1,6 @@
 <?php
+header('Content-Type: application/json');
+
 // Initialize the session
 session_start();
 
@@ -9,27 +11,35 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 }
 
 // Process delete operation after confirmation
-if(isset($_POST["id"]) && !empty($_POST["id"])){
+if(isset($_POST["groceryItemId"]) && !empty($_POST["groceryItemId"])){
     // Include config file
     require_once "../config.php";
 
-    // Prepare a delete statement
-    $sql = "DELETE FROM GroceryItem WHERE id = :id";
+    $groceryItemId = $_POST["groceryItemId"];
+    $listId = $_POST["listId"];
+    $isPurchased = $_POST["isPurchased"];
+
+    $sql = "UPDATE ListCategoryGroceryItem SET IsPurchased=:isPurchased WHERE GroceryItemId=:groceryItemId AND ListId=:listId";
 
     if($stmt = $pdo->prepare($sql)){
         // Bind variables to the prepared statement as parameters
-        $stmt->bindParam(":id", $param_id);
+        $stmt->bindParam(":isPurchased", $param_isPurchased);
+        $stmt->bindParam(":groceryItemId", $param_groceryItemId);
+        $stmt->bindParam(":listId", $param_listId);
 
         // Set parameters
-        $param_id = trim($_POST["id"]);
+        $param_isPurchased = $isPurchased;
+        $param_groceryItemId = $groceryItemId;
+        $param_listId = $listId;
 
         // Attempt to execute the prepared statement
         if($stmt->execute()){
-            // Records deleted successfully. Redirect to landing page
-            header("location: index.php");
+            // Records created successfully. Redirect to landing page
+            //header("location: list.php?listId=" . $listId);
+            //header("Refresh:0; url=list.php?listId=" . $listId);
             exit();
         } else{
-            echo "Oops! Something went wrong. Please try again later.";
+            echo "Something went wrong. Please try again later.";
         }
     }
 
@@ -38,50 +48,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
 
     // Close connection
     unset($pdo);
-} else{
-    // Check existence of id parameter
-    if(empty(trim($_GET["id"]))){
-        // URL doesn't contain id parameter. Redirect to error page
-        header("location: ../error.php?sender=groceryitem delete"");
-        exit();
-    }
+} else {
+  echo "Missing parameter groceryItemId!";
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Delete Record</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
-    <style type="text/css">
-        .wrapper{
-            max-width: 500px;
-            margin: 0 auto;
-        }
-    </style>
-</head>
-<body>
-    <div class="wrapper">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="page-header">
-                        <h1>Delete Record</h1>
-                    </div>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                        <div class="alert alert-danger fade in">
-                            <input type="hidden" name="id" value="<?php echo trim($_GET["id"]); ?>"/>
-                            <p>Are you sure you want to delete this record?</p><br>
-                            <p>
-                                <input type="submit" value="Yes" class="btn btn-danger">
-                                <a href="index.php" class="btn btn-default">No</a>
-                            </p>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
