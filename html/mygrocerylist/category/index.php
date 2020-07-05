@@ -19,6 +19,7 @@ require_once "../config.php";
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Grocery List</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <style type="text/css">
@@ -46,7 +47,7 @@ require_once "../config.php";
                 <div class="col-md-12">
                     <div class="page-header clearfix">
                         <a href="../index.php" class="pull-left">Back</a>
-                        <a href="../groceryitem/index.php" class="pull-right">Go to grocery items</a>
+                        <a href="../groceryitem/index.php" class="pull-right">Go to items</a>
                     </div>
                     <div class="page-header clearfix">
                         <h2 class="pull-left">Categories</h2>

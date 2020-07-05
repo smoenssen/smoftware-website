@@ -107,6 +107,7 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Grocery List</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <style type="text/css">
@@ -114,11 +115,29 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
             max-width: 500px;
             margin: 0 auto;
         }
+
         .page-header h2{
             margin-top: 0;
         }
+
         table tr td:last-child a{
             margin-right: 15px;
+        }
+
+        .white, .white a {
+          color: #fff;
+        }
+
+        .checkbox-color {
+          color: var(--btn-success-color);
+        }
+
+        .ispurchased, .ispurchased:hover, .ispurchased:checked {
+          background-color: var(--med-gray-bg-color) !important;
+        }
+
+        .isnotpurchased, .isnotpurchased:hover, .isnotpurchased:checked {
+          background-color: var(--light-gray-bg-color) !important;
         }
     </style>
     <script type="text/javascript">
@@ -127,6 +146,24 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
 
             // Is purchased
             $('.ispurchased').click(function(){
+              // id is <grocery item id>;<list id>;<is purchased>
+              var str = this.id;
+              var res = str.split(";");
+              var groceryItemId = res[0];
+              var listId = res[1];
+              var isPurchased = res[2];
+
+              jQuery.ajax({
+                type: "POST",
+                url: 'markGroceryItemPurchased.php',
+                dataType: 'json',
+                data: { groceryItemId: groceryItemId, listId: listId, isPurchased: isPurchased },
+              });
+
+              window.location.reload();
+            });
+
+            $('.isnotpurchased').click(function(){
               // id is <grocery item id>;<list id>;<is purchased>
               var str = this.id;
               var res = str.split(";");
@@ -154,7 +191,7 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
         });
     </script>
 </head>
-<body>
+<body">
     <div class="wrapper">
         <div class="container-fluid">
             <div class="row">
@@ -164,12 +201,12 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
                     </div>
                     <div class="page-header clearfix">
                         <h2 class="pull-left"><?php echo $name;?></h2>
-                        <?php echo "<a href='choosegroceries.php?listId=" . $listId . "' class='btn btn-success pull-right'>Add Grocery Items</a>";?>
+                        <?php echo "<a href='choosegroceries.php?listId=" . $listId . "' class='btn btn-success pull-right'>Modify Items in List</a>";?>
                     </div>
 
                     <?php
                     if(!empty($category_list)){
-                      echo "<p>Please check off grocery items as they are purchased.</p>\n";
+                      echo "<p>Check off items as they are completed.</p>\n";
                       echo "<form action='htmlspecialchars(basename(" . $_SERVER['REQUEST_URI'] . ")) ' method='post'>\n";
                       echo "  <div class='panel-group'>\n";
                       echo "     <div class='panel panel-default'>\n";
@@ -198,12 +235,12 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
                                   if ($result->rowCount() == 1) {
                                     $listCategoryGroceryItemRow = $result->fetch();
 
-                                    echo "      <a class='list-group-item clearfix'>\n";
-
                                     if ($listCategoryGroceryItemRow['IsPurchased'] == 1) {
+                                      echo "      <a class='list-group-item clearfix purchased'>\n";
                                       echo "         <del>" . $groceryitem_row['Name'] . "</del>\n";
                                     }
                                     else {
+                                      echo "      <a class='list-group-item clearfix'>\n";
                                       echo          $groceryitem_row['Name'] . "\n";
                                     }
 
@@ -211,11 +248,11 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
 
                                     if ($listCategoryGroceryItemRow['IsPurchased'] == 1) {
                                       echo "              <span class='btn btn-xs btn-default ispurchased' style='border:none;' id='" . $listCategoryGroceryItemRow["GroceryItemId"] . ";" . $listCategoryGroceryItemRow["ListId"] . ";0'>\n";
-                                      echo "          <span class='glyphicon glyphicon-check' aria-hidden='true'></span>\n";
+                                      echo "          <span class='glyphicon glyphicon-check checkbox-color' aria-hidden='true'></span>\n";
                                     }
                                     else {
-                                      echo "              <span class='btn btn-xs btn-default ispurchased' style='border:none;' id='" . $listCategoryGroceryItemRow["GroceryItemId"] . ";" . $listCategoryGroceryItemRow["ListId"] . ";1'>\n";
-                                      echo "          <span class='glyphicon glyphicon-unchecked' aria-hidden='true'></span>\n";
+                                      echo "              <span class='btn-xs btn-default isnotpurchased' style='border:none;' id='" . $listCategoryGroceryItemRow["GroceryItemId"] . ";" . $listCategoryGroceryItemRow["ListId"] . ";1'>\n";
+                                      echo "          <span class='glyphicon glyphicon-unchecked white' aria-hidden='true'></span>\n";
                                     }
 
                                     echo "          </span>\n";

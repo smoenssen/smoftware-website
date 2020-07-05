@@ -1,7 +1,7 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: ../login.php");
@@ -10,11 +10,11 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
 // Include config file
 require_once "../config.php";
- 
+
 // Define variables and initialize with empty values
 $name = "";
 $name_err = "";
- 
+
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate name
@@ -26,24 +26,24 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else{
         $name = $input_name;
     }
-    
+
     // Get original source of request
     $src = $_POST["src"];
-    
+
     // Check input errors before inserting in database
     if(empty($name_err) && empty($address_err) && empty($salary_err)){
         // Prepare an insert statement
         $sql = "INSERT INTO Category (Name, UserId) VALUES (:name, :userId)";
- 
+
         if($stmt = $pdo->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bindParam(":name", $param_name);
             $stmt->bindParam(":userId", $param_user_id);
-            
+
             // Set parameters
             $param_name = $name;
             $param_user_id = $_SESSION["id"];
-            
+
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records created successfully. Redirect to landing page
@@ -58,11 +58,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 echo "Something went wrong. Please try again later.";
             }
         }
-         
+
         // Close statement
         unset($stmt);
     }
-    
+
     // Close connection
     unset($pdo);
 }else {
@@ -73,7 +73,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 }
 ?>
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,6 +81,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Create Record</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
     <style type="text/css">
         .wrapper{
             max-width: 500px;
@@ -94,9 +95,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h2>Create Record</h2>
+                        <h2>Create Category</h2>
                     </div>
-                    <p>Please fill this form and submit to add a record to the database.</p>
+                    <p>Fill in this form and click Save to add a category.</p>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
@@ -104,7 +105,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             <input type="hidden" name="src" class="form-control" value="<?php echo $src; ?>">
                             <span class="help-block"><?php echo $name_err;?></span>
                         </div>
-                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <input type="submit" class="btn btn-primary" value="Save">
                         <?php
                         if($src == "groceryitem-create"){
                             echo "<a href='../groceryitem/create.php' class='btn btn-default'>Cancel</a>";
@@ -115,7 +116,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         ?>
                     </form>
                 </div>
-            </div>        
+            </div>
         </div>
     </div>
 </body>

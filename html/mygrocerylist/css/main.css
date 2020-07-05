@@ -1,0 +1,151 @@
+
+
+:root {
+  --main-bg-color: #292929;
+
+  --light-gray-text-color: #dddddd;
+  --med-light-gray-text-color: #bbbbbb;
+  --dark-gray-text-color: #232323;
+
+  --light-gray-bg-color: #707070;
+  --med-gray-bg-color: #606060;
+  --dark-gray-bg-color: #1d1c00;
+  --red-gray-bg-color: #795555;
+  --light-red-gray-bg-color: #d94641;
+  --dark-red-gray-bg-color: #842b27;
+
+  --row-bg-color-light: #505050;
+  --row-bg-color-dark: #474747;
+
+  --btn-success-color: #9ec780;
+  --btn-success-hover-color: #82ab65;
+  --btn-primary-color: #519aa3;
+  --btn-primary-hover-color: #5185a3;
+  --btn-danger-color: #cc423d;
+  --btn-danger-hover-color: #b83b37;
+}
+
+a {
+  color: var(--light-gray-text-color);
+  font-style: italic;
+}
+
+a:hover {
+  color: white;
+  font-style: italic;
+}
+
+h2 {
+  color: white;
+}
+
+p {
+  color: var(--med-light-gray-text-color);
+}
+
+body {
+  background-color: var(--main-bg-color) !important;
+}
+
+th {
+  color: var(--btn-primary-color) !important;
+  border-color: var(--main-bg-color) !important;
+  background-color: var(--row-bg-color-dark) !important;
+}
+
+tr {
+  border-color: var(--dark-gray-bg-color) !important;
+}
+
+td {
+  color: var(--light-gray-text-color);
+  border-color: var(--dark-gray-bg-color) !important;
+}
+
+.table {
+  border-color: var(--main-bg-color);
+}
+
+.table-striped>tbody>tr:nth-child(odd)>td,
+.table-striped>tbody>tr:nth-child(odd)>th {
+   background-color: var(--row-bg-color-light);
+
+ }
+
+ .table-striped>tbody>tr:nth-child(even)>td,
+ .table-striped>tbody>tr:nth-child(even)>th {
+    background-color: var(--row-bg-color-dark);
+  }
+
+.panel > .panel-heading {
+    background-image: none;
+    background-color: var(--row-bg-color-dark);
+    border-color: var(--row-bg-color-dark) !important;
+    color: white;
+
+}
+
+.panel {
+    background-image: none;
+    background-color: var(--dark-gray-bg-color);
+    border-color: var(--dark-gray-bg-color) !important;
+    color: white;
+}
+
+.list-group-item {
+  background-color: var(--light-gray-bg-color) !important;
+  border-color: var(--dark-gray-bg-color) !important;
+  color: var(--light-gray-text-color) !important;
+  font-style: normal;
+}
+
+.list-group-item.purchased {
+  /* background-color needs to match .ispurchased in .php file */
+  background-color: var(--med-gray-bg-color) !important;
+  border-color: var(--dark-gray-bg-color) !important;
+  color: var(--light-gray-text-color) !important;
+  font-style: normal;
+}
+
+.list-group-item.isnotpurchased {
+  background-color: var(--light-gray-bg-color) !important;
+  border-color: var(--dark-gray-bg-color) !important;
+  color: var(--light-gray-text-color) !important;
+  font-style: normal;
+}
+
+.btn-success {
+  background-color: var(--btn-success-color) !important;
+  border-color: var(--btn-success-color)  !important;
+  color: var(--main-bg-color) !important;
+}
+
+.btn-success:hover {
+  background-color: var(--btn-success-hover-color)  !important;
+  border-color: var(--btn-success-hover-color)  !important;
+}
+
+.btn-primary {
+    background-color: var(--btn-primary-color) !important;
+    border-color: var(--btn-primary-color) !important;
+    color: var(--main-bg-color) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--btn-primary-hover-color) !important;
+    border-color: var(--btn-primary-hover-color) !important;
+}
+
+.btn-danger {
+  background-color: var(--btn-danger-color) !important;
+  border-color: var(--dark-red-gray-bg-color) !important;
+}
+
+.btn-danger:hover {
+  background-color: var(--btn-danger-hover-color) !important;
+  border-color: var(--dark-red-gray-bg-color) !important;
+}
+
+.alert-danger {
+  background-color: var(--red-gray-bg-color) !important;
+}

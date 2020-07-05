@@ -100,7 +100,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     <div class="page-header">
                         <h2>Create Record</h2>
                     </div>
-                    <p>Please fill this form and submit to add record to the database.</p>
+                    <p>Fill in this form and click Save to add record to the database.</p>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
@@ -127,7 +127,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
                             <span class="help-block"><?php echo $category_err;?></span>
                         </div>
-                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <input type="submit" class="btn btn-primary" value="Save">
                         <a href="index.php" class="btn btn-default">Cancel</a>
                     </form>
                 </div>

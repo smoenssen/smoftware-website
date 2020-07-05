@@ -19,6 +19,7 @@ require_once "config.php";
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Grocery List</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="css/main.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <style type="text/css">
@@ -59,20 +60,13 @@ require_once "config.php";
                     if($result = $pdo->query($sql)){
                         if($result->rowCount() > 0){
                             echo "<table class='table table-bordered table-striped'>";
-                                echo "<thead>";
-                                    echo "<tr>";
-                                        //echo "<th>#</th>";
-                                        echo "<th>List</th>";
-                                        echo "<th>Action</th>";
-                                    echo "</tr>";
-                                echo "</thead>";
                                 echo "<tbody>";
                                 while($row = $result->fetch()){
                                     echo "<tr>";
                                         //echo "<td>" . $row['id'] . "</td>";
                                         echo "<td><a href='list/list.php?listId=". $row['id'] . "'>" . $row['Name'] . "</a></td>";
                                         echo "<td width='25%'>";
-                                            echo "<a href='update.php?id=". $row['id'] ."' title='Update List' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
+                                            echo "<a href='update.php?id=". $row['id'] ."' title='Rename List' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
                                             echo "<a href='delete.php?id=". $row['id'] ."' title='Delete List' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
                                             echo "<a href='delete.php?id=". $row['id'] ."' title='Print List' data-toggle='tooltip'><span class='glyphicon glyphicon-print'></span></a>";
                                         echo "</td>";

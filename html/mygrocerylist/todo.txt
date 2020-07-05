@@ -3,3 +3,10 @@ set max-width to 500px for all forms.
 Don't allow duplicate entries for list, category, and groceryitem.
 
 When creating new user add default data.
+
+Add support for item quantity.
+
+
+Bugs
+------------------
+When adding new item from list purchased items are cleared

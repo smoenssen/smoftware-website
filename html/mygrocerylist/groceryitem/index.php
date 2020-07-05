@@ -19,6 +19,7 @@ require_once "../config.php";
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Grocery List</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <style type="text/css">
@@ -49,9 +50,10 @@ require_once "../config.php";
                         <a href="../category/index.php" class="pull-right">Go to categories</a>
                     </div>
                     <div class="page-header clearfix">
-                        <h2 class="pull-left">Grocery Items</h2>
+                        <h2 class="pull-left">Items</h2>
                         <a href="create.php?src=index" class="btn btn-success pull-right">Add New Item</a>
                     </div>
+                    <p>Add, edit, or delete items.</p>
                     <?php
                     // Attempt select query execution
                     $sql = "SELECT * FROM GroceryItem WHERE UserId = " . $_SESSION["id"];

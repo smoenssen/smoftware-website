@@ -96,7 +96,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
 
         // Close statement
         unset($stmt);
-         +
+
         // Close connection
         unset($pdo);
     }  else{
@@ -112,8 +112,9 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Update Record</title>
+    <title>Rename List</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="css/main.css">
     <style type="text/css">
         .wrapper{
             max-width: 500px;
@@ -127,9 +128,9 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h2>Update Record</h2>
+                        <h2>Rename List</h2>
                     </div>
-                    <p>Please edit the input values and submit to update the record.</p>
+                    <p>Edit the list name and click Save.</p>
                     <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
@@ -137,7 +138,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                             <span class="help-block"><?php echo $name_err;?></span>
                         </div>
                         <input type="hidden" name="id" value="<?php echo $id; ?>"/>
-                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <input type="submit" class="btn btn-primary" value="Save">
                         <a href="index.php" class="btn btn-default">Cancel</a>
                     </form>
                 </div>

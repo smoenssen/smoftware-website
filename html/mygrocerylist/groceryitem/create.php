@@ -98,8 +98,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create Record</title>
+    <title>Create Item</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="../css/main.css">
     <style type="text/css">
         .wrapper{
             max-width: 500px;
@@ -113,9 +114,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h2>Create Record</h2>
+                        <h2>Create Item</h2>
                     </div>
-                    <p>Please fill this form and submit to add record to the database.</p>
+                    <p>Fill in this form and click Save to add item.</p>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
@@ -148,7 +149,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
                             <span class="help-block"><?php echo $category_err;?></span>
                         </div>
-                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <input type="submit" class="btn btn-primary" value="Save">
 
                         <?php
                         if($src == "list-choosegroceries"){

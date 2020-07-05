@@ -13,8 +13,8 @@ require_once "config.php";
 
 // Process delete operation after confirmation
 if(isset($_POST["id"]) && !empty($_POST["id"])){
-    // Prepare a delete statement
-    $sql = "DELETE FROM GroceryList WHERE id = :id";
+    // Prepare delete statement
+    $sql = "DELETE FROM ListCategoryGroceryItem WHERE ListId = :id";
 
     if($stmt = $pdo->prepare($sql)){
         // Bind variables to the prepared statement as parameters
@@ -25,9 +25,25 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
 
         // Attempt to execute the prepared statement
         if($stmt->execute()){
-            // Records deleted successfully. Redirect to landing page
-            header("location: index.php");
-            exit();
+            // ListCategoryGroceryItem records deleted successfully. Now delete from GroceryList table.
+            $sql = "DELETE FROM GroceryList WHERE id = :id";
+
+            if($stmt = $pdo->prepare($sql)){
+                // Bind variables to the prepared statement as parameters
+                $stmt->bindParam(":id", $param_id);
+
+                // Set parameters
+                $param_id = trim($_POST["id"]);
+
+                // Attempt to execute the prepared statement
+                if($stmt->execute()){
+                    // Records deleted successfully. Redirect to landing page
+                    header("location: index.php");
+                    exit();
+                } else{
+                    echo "Oops! Something went wrong. Please try again later.";
+                }
+            }
         } else{
             echo "Oops! Something went wrong. Please try again later.";
         }
@@ -54,6 +70,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Delete Record</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="css/main.css">
     <style type="text/css">
         .wrapper{
             max-width: 500px;
@@ -67,12 +84,12 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h1>Delete Record</h1>
+                        <h2>Delete List</h2>
                     </div>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="alert alert-danger fade in">
                             <input type="hidden" name="id" value="<?php echo trim($_GET["id"]); ?>"/>
-                            <p>Are you sure you want to delete this record?</p><br>
+                            <p>Are you sure you want to delete this list?</p><br>
                             <p>
                                 <input type="submit" value="Yes" class="btn btn-danger">
                                 <a href="index.php" class="btn btn-default">No</a>

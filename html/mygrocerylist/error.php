@@ -26,6 +26,7 @@ if(isset($_GET["sender"]) && !empty(trim($_GET["sender"]))){
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Error</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="css/main.css">
     <style type="text/css">
         .wrapper{
             max-width: 500px;
@@ -39,7 +40,7 @@ if(isset($_GET["sender"]) && !empty(trim($_GET["sender"]))){
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h1>Invalid Request</h1>
+                        <h2>Invalid Request</h2>
                     </div>
                     <div class="alert alert-danger fade in">
                       <?php
