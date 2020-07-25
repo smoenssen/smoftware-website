@@ -2,17 +2,16 @@
 
 :root {
   --main-bg-color: #292929;
-
-  --light-gray-text-color: #dddddd;
-  --med-light-gray-text-color: #bbbbbb;
-  --dark-gray-text-color: #232323;
-
   --light-gray-bg-color: #707070;
   --med-gray-bg-color: #606060;
   --dark-gray-bg-color: #1d1c00;
   --red-gray-bg-color: #795555;
   --light-red-gray-bg-color: #d94641;
   --dark-red-gray-bg-color: #842b27;
+
+  --light-gray-text-color: #dddddd;
+  --med-light-gray-text-color: #bbbbbb;
+  --dark-gray-text-color: #232323;
 
   --row-bg-color-light: #505050;
   --row-bg-color-dark: #474747;
@@ -21,7 +20,7 @@
   --btn-success-hover-color: #82ab65;
   --btn-primary-color: #519aa3;
   --btn-primary-hover-color: #5185a3;
-  --btn-danger-color: #cc423d;
+  --btn-danger-color: #af423d;
   --btn-danger-hover-color: #b83b37;
 }
 

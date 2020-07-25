@@ -6,6 +6,10 @@ When creating new user add default data.
 
 Add support for item quantity.
 
+Where to unset variables
+
+Is IsSelected necessary in GroceryItem table? Adding or removing items from ListCategoryGroceryItem table might be enough.
+
 
 Bugs
 ------------------

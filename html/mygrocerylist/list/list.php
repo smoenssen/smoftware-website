@@ -75,7 +75,6 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
       }
 
       // Get category list. Only include categories that have grocery items selected
-
       $sql = "SELECT DISTINCT c.id, c.Name, c.Icon, c.IsSelected FROM Category c
               INNER JOIN ListCategoryGroceryItem l ON l.CatId = c.id
               WHERE l.ListId = " . $listId . " ORDER BY c.Name";
@@ -93,7 +92,7 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
       // Close connection
       unset($pdo);
   }  else{
-      // URL doesn't contain id parameter. Redirect to error page
+      // URL doesn't contain id parameter. Redirect to error page.
       header("location: ../error.php?sender=list1");
       exit();
   }
@@ -176,14 +175,6 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
                 url: 'markGroceryItemPurchased.php',
                 dataType: 'json',
                 data: { groceryItemId: groceryItemId, listId: listId, isPurchased: isPurchased },
-/*
-                success: function(response)
-                {
-                  alert("Record successfully updated");
-                },
-                error: function(xhr, status, error) {
-                  alert(xhr.responseText);
-                }*/
               });
 
               window.location.reload();
@@ -191,7 +182,7 @@ if(isset($_POST["listId"]) && !empty($_POST["listId"])){
         });
     </script>
 </head>
-<body">
+<body>
     <div class="wrapper">
         <div class="container-fluid">
             <div class="row">

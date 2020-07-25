@@ -20,10 +20,55 @@ $category_list = null;
 if(isset($_POST['id'])){
     if(!empty($_POST['data'])) {
 
+      $selectedItems = $_POST['data'];
       $listId = $_POST['id'];
+
+      // First get list of grocery items for this list
+      $sql = "SELECT * FROM ListCategoryGroceryItem WHERE ListId = " . $listId;
+      $smt = $pdo->prepare($sql);
+      $smt->execute();
+      $listCategoryGroceryItemList = $smt->fetchAll();
+
+      // Loop through grocery list and delete records that are not selected
+      foreach ($listCategoryGroceryItemList as $listCategoryGroceryItemRow):
+        $groceryItemId = $listCategoryGroceryItemRow['GroceryItemId'];
+        $catId = $listCategoryGroceryItemRow['CatId'];
+
+        $searchKey = $groceryItemId . ";" . $catId;
+        $foundKey = array_search($searchKey, $selectedItems);
+
+        echo "foundKey = " . $foundKey . "\n";
+
+        //if ($foundKey == false) {
+          echo "foundKey = false\n";
+
+          $sql = "DELETE FROM ListCategoryGroceryItem WHERE GroceryItemId = :groceryItemId AND ListId = :listId";
+
+          if($stmt = $pdo->prepare($sql)){
+            // Bind variables to the prepared statement as parameters
+            $stmt->bindParam(":groceryItemId", $param_groceryItemId);
+            $stmt->bindParam(":listId", $param_listId);
+
+            // Set parameters
+            $param_groceryItemId = $groceryItemId;
+            $param_listId = $listId;
+
+            // Attempt to execute the prepared statement
+            if(!$stmt->execute()){
+              echo "Something went wrong. Please try again later.";
+            }
+
+            unset($stm);
+          }
+      //  }
+      //  else {
+      //    echo "foundKey = true\n";
+      //  }
+      endforeach;
 
       // First delete all items for this list. This handles the case
       // where items were unchecked. I'm not sure of a better way.
+      /*
       $sql = "DELETE FROM ListCategoryGroceryItem WHERE listId = :listId";
 
       if($stmt = $pdo->prepare($sql)){
@@ -40,17 +85,16 @@ if(isset($_POST['id'])){
 
         unset($stm);
       }
+      */
 
       // Now loop through all selected items
-      $selectedItems = $_POST['data'];
-
       if (!empty($selectedItems)) {
-        foreach($_POST['data'] as $value){
+        foreach($selectedItems as $value){
           $array = explode(';', $value);
           $groceryItemId = $array[0];
           $catId = $array[1];
 
-          // Make sure this item isn't already in the list1
+          // Make sure this item isn't already in the list
           $sql = "SELECT * FROM ListCategoryGroceryItem WHERE GroceryItemId = ". $groceryItemId . " AND ListId = " . $listId;
 
           if($result = $pdo->query($sql)){
@@ -194,12 +238,14 @@ if(isset($_POST['id'])){
 
                             if (!empty($category_list)) {
                               foreach ($category_list as $row):
+                                $category_name_id = str_replace(' ', '_', $row["Name"]);
+                                
                                 echo "<div class='panel-heading'>\n";
                                 echo "  <h4 class='panel-title'>\n";
-                                echo "    <a data-toggle='collapse' href='#" . $row["Name"] . "'>" . $row["Name"] ."</a>\n";
+                                echo "    <a data-toggle='collapse' href='#" . $category_name_id . "'>" . $row["Name"] ."</a>\n";
                                 echo "  </h4>\n";
                                 echo "</div>\n";
-                                echo "<div id='"  . $row["Name"] . "' class='panel-collapse collapse'>\n";
+                                echo "<div id='"  . $category_name_id . "' class='panel-collapse collapse'>\n";
                                 echo "  <ul class='list-group'>\n";
 
                                 $sql = "SELECT * FROM GroceryItem WHERE CatId = " . $row["id"] . " ORDER BY Name";

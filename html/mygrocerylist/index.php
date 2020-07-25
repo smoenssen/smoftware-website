@@ -65,10 +65,10 @@ require_once "config.php";
                                     echo "<tr>";
                                         //echo "<td>" . $row['id'] . "</td>";
                                         echo "<td><a href='list/list.php?listId=". $row['id'] . "'>" . $row['Name'] . "</a></td>";
-                                        echo "<td width='25%'>";
+                                        echo "<td width='35%'>";
                                             echo "<a href='update.php?id=". $row['id'] ."' title='Rename List' data-toggle='tooltip'><span class='glyphicon glyphicon-pencil'></span></a>";
                                             echo "<a href='delete.php?id=". $row['id'] ."' title='Delete List' data-toggle='tooltip'><span class='glyphicon glyphicon-trash'></span></a>";
-                                            echo "<a href='delete.php?id=". $row['id'] ."' title='Print List' data-toggle='tooltip'><span class='glyphicon glyphicon-print'></span></a>";
+                                            echo "<a href='pdf.php?id=". $row['id'] ."' title='Create PDF File' data-toggle='tooltip'><span class='glyphicon glyphicon-file'></span></a>";
                                         echo "</td>";
                                     echo "</tr>";
                                 }
