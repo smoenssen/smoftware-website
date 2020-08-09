@@ -14,18 +14,22 @@ require_once "../config.php";
 // Define variables and initialize with empty values
 $name = "";
 $name_err = "";
+$src = "";
+$listId = "";
 
 // Processing form data when form is submitted
 if(isset($_POST["id"]) && !empty($_POST["id"])){
-    // Get hidden input value
+    // Get hidden input values
     $id = $_POST["id"];
+    $listId = $_POST["listId"];
+    $src = $_POST["src"];
 
     // Validate name
     $input_name = trim($_POST["name"]);
     if(empty($input_name)){
         $name_err = "Please enter a name.";
-    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z\s]+$/")))){
-        $name_err = "Please enter a valid name.";
+    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z0-9\s]{1,48}+$/")))){
+        $name_err = "Please enter a valid name (max 48 chars).";
     } else{
         $name = $input_name;
     }
@@ -47,10 +51,16 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records updated successfully. Redirect to landing page
-                header("location: index.php");
+                if ($src== "list-choosegroceries") {
+                    header("location: ../list/choosegroceries.php?listId=" . $listId);
+                }
+                else {
+                    header("location: index.php");
+                }
                 exit();
             } else{
-                echo "Something went wrong. Please try again later.";
+              header("location: ../error.php?sender=category update error 300");
+              exit();
             }
         }
 
@@ -65,6 +75,16 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
         // Get URL parameter
         $id =  trim($_GET["id"]);
+
+        if(isset($_GET["src"]) && !empty(trim($_GET["src"]))){
+            // Get URL parameter
+            $src =  trim($_GET["src"]);
+        }
+
+        if(isset($_GET["listId"]) && !empty(trim($_GET["listId"]))){
+            // Get URL parameter
+            $listId =  trim($_GET["listId"]);
+        }
 
         // Prepare a select statement
         $sql = "SELECT * FROM Category WHERE id = :id";
@@ -85,12 +105,13 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     $name = $row["Name"];
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
-                    header("location: ../error.php?sender=category update1");
+                    header("location: ../error.php?sender=category update error 301");
                     exit();
                 }
 
             } else{
-                echo "Oops! Something went wrong. Please try again later.";
+                header("location: ../error.php?sender=category update error 302");
+                exit();
             }
         }
 
@@ -101,7 +122,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         unset($pdo);
     }  else{
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: ../error.php?sender=category update2");
+        header("location: ../error.php?sender=category update error 303");
         exit();
     }
 }
@@ -137,9 +158,11 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                             <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
                             <span class="help-block"><?php echo $name_err;?></span>
                         </div>
-                        <input type="hidden" name="id" value="<?php echo $id; ?>"/>
                         <input type="submit" class="btn btn-primary" value="Save">
-                        <a href="index.php" class="btn btn-default">Cancel</a>
+                        <input type="hidden" name="id" value="<?php echo $id; ?>"/>
+                        <input name="src" type="hidden" value="<?php echo $src?>"/>
+                        <input name="listId" type="hidden" value="<?php echo $listId?>"/>
+                        <input type='button' class='btn btn-default' value='Cancel' onclick='history.back()'>
                     </form>
                 </div>
             </div>

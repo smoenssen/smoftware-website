@@ -55,7 +55,8 @@ if(isset($_POST['id'])){
 
             // Attempt to execute the prepared statement
             if(!$stmt->execute()){
-              echo "Something went wrong. Please try again later.";
+              header("location: ../error.php?sender=choosegroceries error 200");
+              exit();
             }
 
             unset($stm);
@@ -118,29 +119,30 @@ if(isset($_POST['id'])){
                       // Records created successfully. Redirect to landing page
                       header("location: list.php?listId=" . $listId);
                   } else {
-                      echo "Something went wrong. Please try again later.";
+                    header("location: ../error.php?sender=choosegroceries error 201");
+                    exit();
                   }
 
                   unset($stm);
               }
               else {
-                  echo "Something went wrong! Please try again later.";
+                  header("location: ../error.php?sender=choosegroceries error 202");
                   exit();
               }
             }
             else {
-                echo "Something went wrong here. Please try again later.";
+                header("location: ../error.php?sender=choosegroceries error 203");
                 exit();
             }
           }
           else {
-              echo "Hmmm... something went wrong. Please try again later.";
+              header("location: ../error.php?sender=choosegroceries error 204");
               exit();
           }
         }
       }
       else {
-        echo "Something went wrong. Please try again later!";
+        header("location: ../error.php?sender=choosegroceries error 205");
         exit();
       }
 
@@ -167,7 +169,7 @@ if(isset($_POST['id'])){
         unset($pdo);
     }  else{
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: ../error.php?sender=list choosegroceries");
+        header("location: ../error.php?sender=choosegroceries error 206");
         exit();
     }
 }
@@ -207,6 +209,9 @@ if(isset($_POST['id'])){
         div.custom-control.custom-checkbox{
           padding-left: 15px;
         }
+        .glyphicon {
+          margin-right: 15px;
+        }
     </style>
     <script type="text/javascript">
         $(document).ready(function(){
@@ -220,11 +225,12 @@ if(isset($_POST['id'])){
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header clearfix">
-                        <a href="../" class="pull-right">Done</a>
+                        <?php echo "<a href='../list/list.php?listId=" . $listId . "' class='pull-right'>Back</a>";?>
                     </div>
                     <div class="page-header clearfix">
                         <h2 class="pull-left">Choose Items</h2>
-                        <?php echo "<a href='../groceryitem/create.php?id=" . $listId . "' class='btn btn-success pull-right'>New Item</a>";?>
+                        <?php echo "<a href='../groceryitem/create.php?listId=" . $listId . "&src=list-choosegroceries' class='btn btn-success pull-right'>New Item</a>";?>
+                        <?php echo "<a href='../category/create.php?listId=" . $listId . "&src=list-choosegroceries' class='btn btn-success pull-right'>New Category</a>";?>
                     </div>
 
                     <p>Select items from the categories below then click Save.</p>
@@ -239,10 +245,19 @@ if(isset($_POST['id'])){
                             if (!empty($category_list)) {
                               foreach ($category_list as $row):
                                 $category_name_id = str_replace(' ', '_', $row["Name"]);
-                                
+
                                 echo "<div class='panel-heading'>\n";
                                 echo "  <h4 class='panel-title'>\n";
                                 echo "    <a data-toggle='collapse' href='#" . $category_name_id . "'>" . $row["Name"] ."</a>\n";
+
+                                echo "    <a href='../category/delete.php?id=". $row['id'] .
+                                                "&src=list-choosegroceries&listId=". $listId .
+                                                "' title='Delete " . $row["Name"] ."' data-toggle='tooltip' class='pull-right'><span class='glyphicon glyphicon-trash pull-right'></span></a>";
+
+                                echo "    <a href='../category/update.php?id=". $row['id'] .
+                                                "&src=list-choosegroceries&listId=". $listId .
+                                                "' title='Rename " . $row["Name"] ."' data-toggle='tooltip' class='pull-right'><span class='glyphicon glyphicon-pencil pull-right'></span></a>";
+
                                 echo "  </h4>\n";
                                 echo "</div>\n";
                                 echo "<div id='"  . $category_name_id . "' class='panel-collapse collapse'>\n";
@@ -268,6 +283,15 @@ if(isset($_POST['id'])){
                                   }
 
                                   echo "      <label class='custom-control-label' for='" . $groceryitem_row["id"] . "'>&nbsp;&nbsp;" . $groceryitem_row["Name"] . "</label>\n";
+
+                                  echo "<a href='../groceryitem/delete.php?id=". $groceryitem_row['id'] .
+                                                  "&src=list-choosegroceries&listId=". $listId .
+                                                  "' title='Delete " . $groceryitem_row["Name"] . "' data-toggle='tooltip' class='pull-right'><span class='glyphicon glyphicon-trash pull-right'></span></a>";
+
+                                  echo "<a href='../groceryitem/update.php?id=". $groceryitem_row['id'] .
+                                                  "&src=list-choosegroceries&listId=". $listId .
+                                                  "' title='Update " . $groceryitem_row["Name"] . "' data-toggle='tooltip' class='pull-right'><span class='glyphicon glyphicon-pencil pull-right'></span></a>";
+
                                   echo "    </div>\n";
                                 endforeach;
 

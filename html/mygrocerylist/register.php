@@ -40,7 +40,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     $email = trim($_POST["email"]);
                 }
             } else{
-                echo "Oops! Something went wrong. Please try again later.";
+              header("location: error.php?sender=register error 1100");
+              exit();
             }
 
             // Close statement
@@ -87,7 +88,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 // Redirect to login page
                 header("location: login.php");
             } else{
-                echo "Something went wrong. Please try again later.";
+              header("location: error.php?sender=register error 1101");
+              exit();
             }
 
             // Close statement

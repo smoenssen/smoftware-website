@@ -24,8 +24,8 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     $input_name = trim($_POST["name"]);
     if(empty($input_name)){
         $name_err = "Please enter a name.";
-    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z\s]+$/")))){
-        $name_err = "Please enter a valid name.";
+    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z0-9\s]{1,48}+$/")))){
+        $name_err = "Please enter a valid name (max 48 chars).";
     } else{
         $name = $input_name;
     }
@@ -50,7 +50,8 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                 header("location: index.php");
                 exit();
             } else{
-                echo "Something went wrong. Please try again later.";
+              header("location: error.php?sender=update error 900");
+              exit();
             }
         }
 
@@ -85,12 +86,13 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     $name = $row["Name"];
                 } else{
                     // URL doesn't contain valid id. Redirect to error page
-                    header("location: error.php?sender=update1");
+                    header("location: error.php?sender=update error 901");
                     exit();
                 }
 
             } else{
-                echo "Oops! Something went wrong. Please try again later.";
+              header("location: error.php?sender=update error 902");
+              exit();
             }
         }
 
@@ -101,7 +103,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         unset($pdo);
     }  else{
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: error.php?sender=update2");
+        header("location: error.php?sender=update error 903");
         exit();
     }
 }

@@ -73,7 +73,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     $email_err = "No account found with that email.";
                 }
             } else{
-                echo "Oops! Something went wrong. Please try again later.";
+              header("location: error.php?sender=login error 1000");
+              exit();
             }
 
             // Close statement

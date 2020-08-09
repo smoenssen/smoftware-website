@@ -11,8 +11,52 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 // Include config file
 require_once "../config.php";
 
+$src = "";
+$listId = "";
+
 // Process delete operation after confirmation
 if(isset($_POST["id"]) && !empty($_POST["id"])){
+
+    // Get values
+    $listId = $_POST["listId"];
+    $src = $_POST["src"];
+
+    // First delete records for this category from ListCategoryGroceryItem
+    $sql = "DELETE FROM ListCategoryGroceryItem WHERE CatId = :id";
+
+    if($stmt = $pdo->prepare($sql)){
+        // Bind variables to the prepared statement as parameters
+        $stmt->bindParam(":id", $param_id);
+
+        // Set parameters
+        $param_id = trim($_POST["id"]);
+
+        // Attempt to execute the prepared statement
+        if(!$stmt->execute()){
+          // URL doesn't contain id parameter. Redirect to error page
+          header("location: ../error.php?sender=category delete error 100");
+          exit();
+        }
+    }
+
+    // Next delete records for this category from GroceryItem
+    $sql = "DELETE FROM GroceryItem WHERE CatId = :id";
+
+    if($stmt = $pdo->prepare($sql)){
+        // Bind variables to the prepared statement as parameters
+        $stmt->bindParam(":id", $param_id);
+
+        // Set parameters
+        $param_id = trim($_POST["id"]);
+
+        // Attempt to execute the prepared statement
+        if(!$stmt->execute()){
+          header("location: ../error.php?sender=category delete error 101");
+          exit();
+        }
+    }
+
+    // Now delete from the Category table
     // Prepare a delete statement
     $sql = "DELETE FROM Category WHERE id = :id";
 
@@ -26,10 +70,16 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         // Attempt to execute the prepared statement
         if($stmt->execute()){
             // Records deleted successfully. Redirect to landing page
-            header("location: index.php");
+            if ($src== "list-choosegroceries") {
+                header("location: ../list/choosegroceries.php?listId=" . $listId);
+            }
+            else {
+                header("location: index.php");
+            }
             exit();
         } else{
-            echo "Oops! Something went wrong. Please try again later.";
+          header("location: ../error.php?sender=category delete error 102");
+          exit();
         }
     }
 
@@ -42,8 +92,18 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     // Check existence of id parameter
     if(empty(trim($_GET["id"]))){
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: ../error.php?sender=category delete");
+        header("location: ../error.php?sender=category delete error 103");
         exit();
+    }
+
+    if(isset($_GET["src"]) && !empty(trim($_GET["src"]))){
+        // Get URL parameter
+        $src =  trim($_GET["src"]);
+    }
+
+    if(isset($_GET["listId"]) && !empty(trim($_GET["listId"]))){
+        // Get URL parameter
+        $listId =  trim($_GET["listId"]);
     }
 }
 ?>
@@ -73,10 +133,12 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="alert alert-danger fade in">
                             <input type="hidden" name="id" value="<?php echo trim($_GET["id"]); ?>"/>
-                            <p>Are you sure you want to delete this category?</p><br>
+                            <p>Are you sure you want to delete this category? This will delete all grocery items linked to this category.</p><br>
                             <p>
-                                <input type="submit" value="Yes" class="btn btn-danger">
-                                <a href="index.php" class="btn btn-default">No</a>
+                                <input type="submit" class="btn btn-danger" value="Yes">
+                                <input name="src" type="hidden" value="<?php echo $src?>"/>
+                                <input name="listId" type="hidden" value="<?php echo $listId?>"/>
+                                <input type='button' class='btn btn-default' value='No' onclick='history.back()'>
                             </p>
                         </div>
                     </form>

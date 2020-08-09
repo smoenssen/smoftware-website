@@ -102,7 +102,7 @@ td {
   /* background-color needs to match .ispurchased in .php file */
   background-color: var(--med-gray-bg-color) !important;
   border-color: var(--dark-gray-bg-color) !important;
-  color: var(--light-gray-text-color) !important;
+  color: var(--btn-success-color) !important;
   font-style: normal;
 }
 
@@ -115,7 +115,7 @@ td {
 
 .btn-success {
   background-color: var(--btn-success-color) !important;
-  border-color: var(--btn-success-color)  !important;
+  border-color: var(--main-bg-color)  !important;
   color: var(--main-bg-color) !important;
 }
 

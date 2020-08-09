@@ -41,11 +41,13 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                     header("location: index.php");
                     exit();
                 } else{
-                    echo "Oops! Something went wrong. Please try again later.";
+                    header("location: error.php?sender=delete error 400");
+                    exit();
                 }
             }
         } else{
-            echo "Oops! Something went wrong. Please try again later.";
+          header("location: error.php?sender=delete error 401");
+          exit();
         }
     }
 
@@ -58,7 +60,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     // Check existence of id parameter
     if(empty(trim($_GET["id"]))){
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: error.php?sender=delete");
+        header("location: error.php?sender=delete error 402");
         exit();
     }
 }

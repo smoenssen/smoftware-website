@@ -8,10 +8,18 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     exit;
 }
 
+// Include config file
+require_once "../config.php";
+
+$src = "";
+$listId = "";
+
 // Process delete operation after confirmation
 if(isset($_POST["id"]) && !empty($_POST["id"])){
-    // Include config file
-    require_once "../config.php";
+
+    // Get values
+    $listId = $_POST["listId"];
+    $src = $_POST["src"];
 
     // Prepare a delete statement
     $sql = "DELETE FROM GroceryItem WHERE id = :id";
@@ -26,10 +34,16 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         // Attempt to execute the prepared statement
         if($stmt->execute()){
             // Records deleted successfully. Redirect to landing page
-            header("location: index.php");
+            if ($src== "list-choosegroceries") {
+                header("location: ../list/choosegroceries.php?listId=" . $listId);
+            }
+            else {
+                header("location: index.php");
+            }
             exit();
         } else{
-            echo "Oops! Something went wrong. Please try again later.";
+          header("location: ../error.php?sender=groceryitem delete error 602");
+          exit();
         }
     }
 
@@ -42,8 +56,18 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     // Check existence of id parameter
     if(empty(trim($_GET["id"]))){
         // URL doesn't contain id parameter. Redirect to error page
-        header("location: ../error.php?sender=groceryitem delete");
+        header("location: ../error.php?sender=groceryitem delete error 601");
         exit();
+    }
+
+    if(isset($_GET["src"]) && !empty(trim($_GET["src"]))){
+        // Get URL parameter
+        $src =  trim($_GET["src"]);
+    }
+
+    if(isset($_GET["listId"]) && !empty(trim($_GET["listId"]))){
+        // Get URL parameter
+        $listId =  trim($_GET["listId"]);
     }
 }
 ?>
@@ -75,8 +99,10 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                             <input type="hidden" name="id" value="<?php echo trim($_GET["id"]); ?>"/>
                             <p>Are you sure you want to delete this item?</p><br>
                             <p>
-                                <input type="submit" value="Yes" class="btn btn-danger">
-                                <a href="index.php" class="btn btn-default">No</a>
+                              <input type="submit" class="btn btn-danger" value="Yes">
+                              <input name="src" type="hidden" value="<?php echo $src?>"/>
+                              <input name="listId" type="hidden" value="<?php echo $listId?>"/>
+                              <input type='button' class='btn btn-default' value='No' onclick='history.back()'>
                             </p>
                         </div>
                     </form>

@@ -14,6 +14,8 @@ require_once "../config.php";
 // Define variables and initialize with empty values
 $name = "";
 $name_err = "";
+$src = "";
+$listId = "";
 
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -21,13 +23,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $input_name = trim($_POST["name"]);
     if(empty($input_name)){
         $name_err = "Please enter a name.";
-    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z\s]+$/")))){
-        $name_err = "Please enter a valid name.";
+    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z0-9\s]{1,48}+$/")))){
+        $name_err = "Please enter a valid name (max 48 chars).";
     } else{
         $name = $input_name;
     }
 
-    // Get original source of request
+    // Get values
+    $listId = $_POST["listId"];
     $src = $_POST["src"];
 
     // Check input errors before inserting in database
@@ -50,12 +53,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 if ($src == "groceryitem-create") {
                     header("location: ../groceryitem/create.php");
                 }
+                else if ($src== "list-choosegroceries") {
+                    header("location: ../list/choosegroceries.php?listId=" . $listId);
+                }
                 else {
                     header("location: index.php");
                 }
                 exit();
             } else{
-                echo "Something went wrong. Please try again later.";
+              header("location: ../error.php?sender=category create error 1500");
+              exit();
             }
         }
 
@@ -70,6 +77,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if(isset($_GET["src"]) && !empty(trim($_GET["src"]))){
         // Get URL parameter
         $src =  trim($_GET["src"]);
+    }
+
+    if(isset($_GET["listId"]) && !empty(trim($_GET["listId"]))){
+        // Get URL parameter
+        $listId =  trim($_GET["listId"]);
     }
 }
 ?>
@@ -106,13 +118,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             <span class="help-block"><?php echo $name_err;?></span>
                         </div>
                         <input type="submit" class="btn btn-primary" value="Save">
-                        <?php
-                        if($src == "groceryitem-create"){
-                            echo "<a href='../groceryitem/create.php' class='btn btn-default'>Cancel</a>";
-                        }
-                        else {
-                            echo "<a href='index.php' class='btn btn-default'>Cancel</a>";
-                        }
+                        <input name="src" type="hidden" value="<?php echo $src?>"/>
+                        <input name="listId" type="hidden" value="<?php echo $listId?>"/>
+                        <input type='button' class='btn btn-default' value='Cancel' onclick='history.back()'>
                         ?>
                     </form>
                 </div>

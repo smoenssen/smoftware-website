@@ -21,8 +21,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $input_name = trim($_POST["name"]);
     if(empty($input_name)){
         $name_err = "Please enter a name.";
-    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z\s]+$/")))){
-        $name_err = "Please enter a valid name.";
+    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z0-9\s]{1,48}+$/")))){
+        $name_err = "Please enter a valid name (max 48 chars).";
     } else{
         $name = $input_name;
     }
@@ -47,7 +47,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 header("location: index.php");
                 exit();
             } else{
-                echo "Something went wrong. Please try again later.";
+              header("location: error.php?sender=create error 1700");
+              exit();
             }
         }
 

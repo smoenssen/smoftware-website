@@ -39,7 +39,8 @@ if(isset($_POST["groceryItemId"]) && !empty($_POST["groceryItemId"])){
             //header("Refresh:0; url=list.php?listId=" . $listId);
             exit();
         } else{
-            echo "Something went wrong. Please try again later.";
+          header("location: ../error.php?sender=list markGroceryItemPurchased error 2000");
+          exit();
         }
     }
 

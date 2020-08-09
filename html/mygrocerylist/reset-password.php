@@ -58,7 +58,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 header("location: login.php");
                 exit();
             } else{
-                echo "Oops! Something went wrong. Please try again later.";
+              header("location: error.php?sender=reset-password 1200");
+              exit();
             }
 
             // Close statement
