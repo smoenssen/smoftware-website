@@ -151,7 +151,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 <p>Already have an account? <a href="login.php">Login here</a>.</p>
 
 
-                <script src='https://www.google.com/recaptcha/api.js?hl=es'></script>
+                <script src='https://www.google.com/recaptcha/api.js?hl=en'></script>
             </form>
         </div>
     </div>

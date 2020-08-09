@@ -42,6 +42,10 @@ p {
   color: var(--med-light-gray-text-color);
 }
 
+label {
+  color: var(--med-light-gray-text-color) !important;
+}
+
 body {
   background-color: var(--main-bg-color) !important;
 }

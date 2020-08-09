@@ -111,8 +111,6 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
         // Prepare a select statement
         $sql = "SELECT * FROM GroceryItem WHERE id = " . $id;
 
-        error_log($sql);
-
         if($stmt = $pdo->prepare($sql)){
             // Bind variables to the prepared statement as parameters
             $stmt->bindParam(":id", $param_id);

@@ -127,7 +127,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         <div class="wrapper">
             <h3 style="color:white; font-weight: lighter"><strong>sm</strong>oftware<sup>&trade;</sup></h3>
             <h2>Login</h2>
-            <p>Please fill in your credentials to login.</p>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <div class="form-group <?php echo (!empty($email_err)) ? 'has-error' : ''; ?>">
                     <label>Email</label>
@@ -143,6 +142,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     <input type="submit" class="btn btn-primary" value="Login">
                 </div>
                 <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>
+                <p>Forgot password? <a href="reset-password.php">Reset</a>.</p>
             </form>
         </div>
     </div>
