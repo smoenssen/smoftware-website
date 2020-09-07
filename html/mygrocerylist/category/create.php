@@ -19,22 +19,41 @@ $listId = "";
 
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-    // Validate name
-    $input_name = trim($_POST["name"]);
-    if(empty($input_name)){
-        $name_err = "Please enter a name.";
-    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z0-9\s]{1,48}+$/")))){
-        $name_err = "Please enter a valid name (max 48 chars).";
-    } else{
-        $name = $input_name;
-    }
 
     // Get values
     $listId = $_POST["listId"];
     $src = $_POST["src"];
 
+    if (isset($_POST["btnCancel"])) {
+        if ($src == "groceryitem-create") {
+            header("location: ../groceryitem/create.php?listId=" . $listId . "&src=list-choosegroceries");
+        }
+        else if ($src== "list-choosegroceries") {
+            header("location: ../list/choosegroceries.php?listId=" . $listId);
+        }
+        else if ($src == "index") {
+          header("location: index.php");
+        }
+        else {
+            header("location: ../error.php?sender=category create cancel src = " . $src);
+        }
+        exit();
+    }
+
+    // Validate name
+    $input_name = trim($_POST["name"]);
+    if(empty($input_name)){
+        $name_err = "Please enter a name.";
+    } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z0-9\s]{1,48}+$/")))){
+        $name_err = "Please enter a valid name (max 48 non-special characters).";
+    } else{
+        $name = $input_name;
+    }
+
     // Check input errors before inserting in database
     if(empty($name_err) && empty($address_err) && empty($salary_err)){
+        //$cancel_go_back = 1;
+
         // Prepare an insert statement
         $sql = "INSERT INTO Category (Name, UserId) VALUES (:name, :userId)";
 
@@ -51,13 +70,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             if($stmt->execute()){
                 // Records created successfully. Redirect to landing page
                 if ($src == "groceryitem-create") {
-                    header("location: ../groceryitem/create.php");
+                    header("location: ../groceryitem/create.php?listId=" . $listId . "&src=category-create");
                 }
                 else if ($src== "list-choosegroceries") {
                     header("location: ../list/choosegroceries.php?listId=" . $listId);
                 }
-                else {
+                else if ($src == "index"){
                     header("location: index.php");
+                }
+                else {
+                    header("location: ../error.php?sender=category create src = " . $src);
                 }
                 exit();
             } else{
@@ -110,7 +132,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <h2>Create Category</h2>
                     </div>
                     <p>Fill in this form and click Save to add a category.</p>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . "?listId=" . $listId . "&src=" . $src; ?>" method="post">
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
                             <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
@@ -120,7 +142,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <input type="submit" class="btn btn-primary" value="Save">
                         <input name="src" type="hidden" value="<?php echo $src?>"/>
                         <input name="listId" type="hidden" value="<?php echo $listId?>"/>
-                        <input type='button' class='btn btn-default' value='Cancel' onclick='history.back()'>
+                        <input type="submit" class="btn btn-default" name="btnCancel" value='Cancel'>
                         ?>
                     </form>
                 </div>

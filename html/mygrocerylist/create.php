@@ -22,7 +22,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if(empty($input_name)){
         $name_err = "Please enter a name.";
     } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z0-9\s]{1,48}+$/")))){
-        $name_err = "Please enter a valid name (max 48 chars).";
+        $name_err = "Please enter a valid name (max 48 non-special characters).";
     } else{
         $name = $input_name;
     }

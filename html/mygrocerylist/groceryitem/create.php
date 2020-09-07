@@ -20,28 +20,46 @@ $listId = "";
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
+    // Get values
+    $listId = $_POST["listId"];
+    $src = $_POST["src"];
+
+    if (isset($_POST["btnCancel"])) {
+        if ($src == "category-create") {
+            header("location: ../list/choosegroceries.php?listId=" . $listId);
+        }
+        else if ($src == "list-choosegroceries") {
+            header("location: ../list/choosegroceries.php?listId=" . $listId);
+        }
+        else if ($src == "index") {
+            header("location: index.php");
+        }
+        else {
+            header("location: ../error.php?sender=grocery item create cancel src = " . $src);
+        }
+        exit();
+    }
+
     if(empty($category_list)){
         $smt = $pdo->prepare('SELECT * FROM Category WHERE UserId = ' . $_SESSION["id"] . ' ORDER BY Name');
         $smt->execute();
         $category_list = $smt->fetchAll();
     }
 
-    // Get values
-    $listId = $_POST["listId"];
-    $src = $_POST["src"];
-
     // Validate name
     $input_name = trim($_POST["name"]);
     if(empty($input_name)){
         $name_err = "Please enter a name.";
     } elseif(!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options"=>array("regexp"=>"/^[a-zA-Z0-9\s]{1,48}+$/")))){
-        $name_err = "Please enter a valid name (max 48 chars).";
+        $name_err = "Please enter a valid name (max 48 non-special characters).";
     } else{
         $name = $input_name;
     }
 
     // Validate category
-    $input_category = trim($_POST["selCategory"]);
+    if (isset($_POST["selCategory"])) {
+      $input_category = trim($_POST["selCategory"]);
+    }
     if(empty($input_category)){
         $category_err = "Please select a category.";
     } else{
@@ -67,11 +85,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             // Attempt to execute the prepared statement
             if($stmt->execute()){
                 // Records created successfully. Redirect to landing page
-                if ($src== "list-choosegroceries") {
+                if ($src == "list-choosegroceries") {
                     header("location: ../list/choosegroceries.php?listId=" . $listId);
                 }
-                else {
+                else if ($src == "category-create") {
+                    header("location: ../list/choosegroceries.php?listId=" . $listId);
+                }
+                else if ($src == "index") {
                     header("location: index.php");
+                }
+                else {
+                    header("location: ../error.php?sender=grocery item create src = " . $src);
                 }
                 exit();
             } else{
@@ -125,7 +149,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <h2>Create Item</h2>
                     </div>
                     <p>Fill in this form and click Save to add item.</p>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . "?listId=" . $listId . "&src=" . $src; ?>" method="post">
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
                             <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
@@ -151,7 +175,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                                     <?php endforeach ?>
                                 </select>
                                 <span class="input-group-btn">
-                                    <a href="../category/create.php?src=groceryitem-create" class="btn btn-success pull-right">New</a>
+                                    <a href="../category/create.php?listId=<?php echo $listId?>&src=groceryitem-create" class="btn btn-success pull-right">New</a>
                                 </span>
                             </div>
 
@@ -160,7 +184,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <input type="submit" class="btn btn-primary" value="Save">
                         <input name="src" type="hidden" value="<?php echo $src?>"/>
                         <input name="listId" type="hidden" value="<?php echo $listId?>"/>
-                        <input type='button' class='btn btn-default' value='Cancel' onclick='history.back()'>
+                        <input type="submit" class="btn btn-default" name="btnCancel" value='Cancel'>
                     </form>
                 </div>
             </div>
